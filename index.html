@@ -7,17 +7,17 @@
 <meta name="description" content="รวมเว็บดูหนัง ซีรีส์ อนิเมะ เพลง และสตรีมมิ่งถูกลิขสิทธิ์ยอดนิยม ค้นหาง่าย ครบจบในที่เดียว">
 <style>
   :root {
-    --bg: #0d0f14;
-    --bg-soft: #151823;
-    --card: #1a1e2c;
-    --card-hover: #222739;
-    --text: #eef0f6;
-    --text-dim: #9aa1b5;
+    --bg: #141414;
+    --bg-soft: #1c1c1c;
+    --card: #232323;
+    --card-hover: #2b2b2b;
+    --text: #ffffff;
+    --text-dim: #b3b3b3;
     --accent: #e50914;
     --accent-2: #f5c518;
-    --chip: #242a3d;
+    --chip: #2a2a2a;
     --chip-active: #e50914;
-    --radius: 16px;
+    --radius: 6px;
     font-size: 16px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,10 +31,11 @@
   /* ===== Header ===== */
   header {
     position: sticky; top: 0; z-index: 50;
-    background: rgba(13,15,20,.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid #232838;
+    background: linear-gradient(180deg, #141414 8%, rgba(20,20,20,.9) 100%);
+    border-bottom: none;
+    transition: background .3s;
   }
+  header.solid { background: #141414; }
   .header-inner {
     max-width: 1200px; margin: 0 auto;
     padding: 14px 20px;
@@ -112,20 +113,60 @@
     font-size: 1.1rem; cursor: pointer; display: none; padding: 4px;
   }
 
-  /* ===== Hero ===== */
-  .hero {
-    max-width: 1200px; margin: 0 auto;
-    padding: 40px 20px 8px;
-    text-align: center;
+  /* ===== Hero banner (Netflix) ===== */
+  .hero-banner {
+    position: relative;
+    min-height: min(78vh, 620px);
+    margin-top: -70px;              /* ให้ backdrop ลอดใต้ header โปร่ง */
+    display: flex; align-items: flex-end;
+    background-size: cover; background-position: center top;
+    background-repeat: no-repeat; background-color: #0a0a0a;
   }
-  .hero h1 {
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
-    font-weight: 800;
-    background: linear-gradient(90deg, #fff, #ffb3b7);
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent;
+  .hero-banner::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(20,20,20,.92) 0%, rgba(20,20,20,.55) 42%, rgba(20,20,20,0) 75%),
+      linear-gradient(0deg, #141414 2%, rgba(20,20,20,.35) 45%, rgba(20,20,20,0) 75%);
   }
-  .hero p { color: var(--text-dim); margin-top: 10px; font-size: 1.05rem; }
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 1200px; width: 100%; margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 56px) clamp(34px, 7vh, 80px);
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--text-dim); font-size: .82rem; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .hero-tag b { color: var(--accent); letter-spacing: 1px; }
+  .hero-content h1 {
+    font-size: clamp(1.9rem, 6vw, 3.6rem);
+    font-weight: 800; line-height: 1.05; max-width: 16ch;
+    text-shadow: 0 2px 18px rgba(0,0,0,.6); text-wrap: balance;
+  }
+  .hero-meta {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    margin: 16px 0 12px; font-size: .95rem; color: #dcdcdc; font-weight: 600;
+  }
+  .hero-meta .hr-score { color: #46d369; font-weight: 800; }
+  .hero-overview {
+    max-width: 48ch; color: #e2e2e2; line-height: 1.6;
+    font-size: clamp(.9rem, 2.3vw, 1.05rem);
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    text-shadow: 0 1px 10px rgba(0,0,0,.5);
+  }
+  .hero-btns { display: flex; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+  .hero-btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 11px 26px; border-radius: 5px; border: none;
+    font-size: 1.02rem; font-weight: 700; cursor: pointer; font-family: inherit;
+    text-decoration: none; transition: filter .15s, background .15s;
+  }
+  .hero-btn.play { background: #fff; color: #000; }
+  .hero-btn.play:hover { filter: brightness(.82); }
+  .hero-btn.info { background: rgba(109,109,110,.7); color: #fff; }
+  .hero-btn.info:hover { background: rgba(109,109,110,.5); }
+  .hero-skeleton { background: linear-gradient(110deg, #1a1a1a 30%, #242424 50%, #1a1a1a 70%); }
 
   /* ===== Category chips ===== */
   .chips {
@@ -224,36 +265,45 @@
     padding: 60px 0; font-size: 1.05rem;
   }
 
-  /* ===== Movies (TMDB) ===== */
-  .movies-sec { max-width: 1200px; margin: 38px auto 0; padding: 0 20px; }
-  .movies-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-  .movies-head h2 { font-size: 1.2rem; }
-  .movies-head .sub { color: var(--text-dim); font-size: .85rem; flex: 1; }
-  .movie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 14px;
+  /* ===== Movies (TMDB) — Netflix rows ===== */
+  .movies-sec { max-width: 1360px; margin: -6vh auto 0; position: relative; z-index: 3; padding: 0; }
+  .movies-head { display: none; }
+  .row-title {
+    font-size: clamp(1.05rem, 2.6vw, 1.4rem); font-weight: 700;
+    margin: 26px 0 12px; padding: 0 clamp(20px, 5vw, 56px);
   }
-  .row-title { font-size: 1.05rem; font-weight: 700; margin: 28px 0 14px; }
   #movieArea .row-title:first-child { margin-top: 0; }
-  .movie-card {
-    cursor: pointer; border-radius: 12px; overflow: hidden;
-    background: var(--card); border: 1px solid #252b40;
-    transition: transform .15s, border-color .15s;
+  /* แถวเลื่อนแนวนอน */
+  .movie-grid {
+    display: flex; gap: 10px;
+    overflow-x: auto; overflow-y: hidden;
+    padding: 6px clamp(20px, 5vw, 56px) 10px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin; scrollbar-color: #3a3a3a transparent;
   }
-  .movie-card:hover { transform: translateY(-4px); border-color: #39415f; }
-  .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: #10131c; }
-  .movie-card .m-info { padding: 9px 10px 11px; }
+  .movie-grid::-webkit-scrollbar { height: 8px; }
+  .movie-grid::-webkit-scrollbar-thumb { background: #3a3a3a; border-radius: 8px; }
+  .movie-grid::-webkit-scrollbar-track { background: transparent; }
+  .movie-card {
+    cursor: pointer; border-radius: var(--radius); overflow: hidden;
+    background: var(--card);
+    flex: 0 0 auto; width: clamp(128px, 30vw, 168px);
+    scroll-snap-align: start;
+    transition: transform .2s ease;
+  }
+  .movie-card:hover { transform: scale(1.07); z-index: 5; box-shadow: 0 8px 26px rgba(0,0,0,.6); }
+  .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: #0f0f0f; }
+  .movie-card .m-info { padding: 8px 9px 10px; }
   .movie-card .m-title {
-    font-size: .85rem; font-weight: 600; line-height: 1.35;
+    font-size: .82rem; font-weight: 600; line-height: 1.35;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
   .movie-card .m-meta {
-    color: var(--text-dim); font-size: .75rem; margin-top: 4px;
+    color: var(--text-dim); font-size: .74rem; margin-top: 4px;
     display: flex; justify-content: space-between;
   }
-  .m-rating { color: var(--accent-2); font-weight: 700; }
-  .movie-error { color: var(--text-dim); padding: 20px 0; }
+  .m-rating { color: #46d369; font-weight: 700; }
+  .movie-error { color: var(--text-dim); padding: 20px clamp(20px, 5vw, 56px); }
 
   /* ===== Modal ===== */
   .modal-bg {
@@ -318,10 +368,7 @@
   </div>
 </header>
 
-<section class="hero">
-  <h1>รวมเว็บดูหนัง & สตรีมมิ่งยอดนิยม</h1>
-  <p>ครบทุกเว็บถูกลิขสิทธิ์ — หนัง ซีรีส์ อนิเมะ กีฬา เพลง หาง่าย จบในที่เดียว</p>
-</section>
+<section class="hero-banner hero-skeleton" id="heroBanner"></section>
 
 <div class="drawer-bg" id="drawerBg"></div>
 <nav class="drawer" id="drawer" aria-label="เมนูหลัก">
@@ -341,10 +388,6 @@
 </nav>
 
 <section class="movies-sec">
-  <div class="movies-head">
-    <h2>🔥 มาแรงตอนนี้</h2>
-    <span class="sub">ข้อมูลจาก TMDB — กดที่เรื่องเพื่อดูเรื่องย่อและที่ดูถูกลิขสิทธิ์ในไทย</span>
-  </div>
   <div id="movieArea"></div>
 </section>
 
@@ -352,6 +395,9 @@
   <div class="modal" id="modalBox"></div>
 </div>
 
+<div class="section-title" id="directory" style="max-width:1200px;margin:40px auto 0;padding:0 20px;">
+  🗂️ รวมเว็บดูหนัง & สตรีมมิ่งถูกลิขสิทธิ์
+</div>
 <div class="chips" id="chips"></div>
 
 <main>
@@ -555,6 +601,7 @@ render();
 /* ===== หนังยอดนิยมจาก TMDB ===== */
 const TMDB_API = "https://api.themoviedb.org/3";
 const TMDB_IMG = "https://image.tmdb.org/t/p/w342";
+const TMDB_BACKDROP = "https://image.tmdb.org/t/p/w1280";
 // ลิงก์หน้าแรกของผู้ให้บริการที่รู้จัก (map จากชื่อ provider ของ TMDB)
 const PROVIDER_LINKS = {
   "netflix": "https://www.netflix.com/th/",
@@ -633,6 +680,32 @@ function movieCardHTML(m, type) {
 const itemCache = {};
 let rowsHTML = null;
 
+const heroBanner = document.getElementById("heroBanner");
+
+function renderHero(m, type) {
+  if (!m || !m.backdrop_path) return;
+  const title = m.title || m.name || "";
+  const year = ((m.release_date || m.first_air_date) || "").slice(0, 4);
+  heroBanner.classList.remove("hero-skeleton");
+  heroBanner.style.backgroundImage = `url(${TMDB_BACKDROP}${m.backdrop_path})`;
+  heroBanner.innerHTML = `
+    <div class="hero-content">
+      <div class="hero-tag"><b>MOVIEHUB</b> · หนังเด่นวันนี้</div>
+      <h1>${esc(title)}</h1>
+      <div class="hero-meta">
+        <span class="hr-score">★ ${(m.vote_average || 0).toFixed(1)}</span>
+        ${year ? `<span>${year}</span>` : ""}
+        <span>${type === "tv" ? "ซีรีส์" : "ภาพยนตร์"}</span>
+      </div>
+      <p class="hero-overview">${esc(m.overview) || "กดปุ่มด้านล่างเพื่อดูรายละเอียดและช่องทางรับชมถูกลิขสิทธิ์"}</p>
+      <div class="hero-btns">
+        <button class="hero-btn play" id="heroInfo">▶ ดูรายละเอียด</button>
+        <a class="hero-btn info" href="#directory">ℹ เว็บดูหนังทั้งหมด</a>
+      </div>
+    </div>`;
+  document.getElementById("heroInfo").onclick = () => openItem(type, m.id);
+}
+
 function attachCardHandlers() {
   movieArea.querySelectorAll(".movie-card").forEach(el => {
     el.onclick = () => openItem(el.dataset.type, Number(el.dataset.id));
@@ -646,10 +719,15 @@ async function loadMovies() {
       ROWS.map(r => tmdbFetch(r.path, r.params || {}).catch(e => { if (String(e).includes("401")) throw e; return null; }))
     );
     let html = "";
+    let heroPick = null;
     ROWS.forEach((row, i) => {
-      const items = ((results[i] || {}).results || []).slice(0, 12);
+      const items = ((results[i] || {}).results || []).slice(0, 14);
       if (!items.length) return;
       items.forEach(m => { itemCache[row.type + ":" + m.id] = m; });
+      if (!heroPick) {
+        const withArt = items.find(m => m.backdrop_path);
+        if (withArt) heroPick = { m: withArt, type: row.type };
+      }
       html += `<div class="row-title" id="trow-${i}">${row.title}</div>
         <div class="movie-grid">${items.map(m => movieCardHTML(m, row.type)).join("")}</div>`;
     });
@@ -657,6 +735,7 @@ async function loadMovies() {
     rowsHTML = html;
     movieArea.innerHTML = html;
     attachCardHandlers();
+    if (heroPick) renderHero(heroPick.m, heroPick.type);
   } catch (e) {
     movieArea.innerHTML = `<div class="movie-error">โหลดข้อมูลไม่สำเร็จ — ลองรีเฟรชหน้าอีกครั้ง</div>`;
   }
@@ -798,6 +877,12 @@ document.getElementById("drawerFav").onclick = () => {
   const target = favs.size ? document.getElementById("favSection") : document.querySelector("main");
   target.scrollIntoView({ behavior: "smooth", block: "start" });
 };
+
+// header ทึบเมื่อเลื่อนลง (เหมือน Netflix)
+const headerEl = document.querySelector("header");
+const onScroll = () => headerEl.classList.toggle("solid", window.scrollY > 60);
+window.addEventListener("scroll", onScroll, { passive: true });
+onScroll();
 
 loadMovies();
 </script>
