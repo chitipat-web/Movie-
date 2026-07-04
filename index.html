@@ -187,10 +187,6 @@
   .movies-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
   .movies-head h2 { font-size: 1.2rem; }
   .movies-head .sub { color: var(--text-dim); font-size: .85rem; flex: 1; }
-  .key-reset {
-    background: none; border: none; color: var(--text-dim);
-    cursor: pointer; font-size: .8rem; text-decoration: underline; font-family: inherit;
-  }
   .movie-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -215,25 +211,6 @@
     display: flex; justify-content: space-between;
   }
   .m-rating { color: var(--accent-2); font-weight: 700; }
-  .setup-card {
-    background: var(--card); border: 1px dashed #39415f;
-    border-radius: var(--radius); padding: 24px;
-    line-height: 1.85; color: var(--text-dim); font-size: .95rem;
-  }
-  .setup-card b { color: var(--text); }
-  .setup-card ol { margin: 8px 0 16px 22px; }
-  .setup-card a { color: var(--accent-2); }
-  .key-row { display: flex; gap: 10px; flex-wrap: wrap; }
-  .key-row input {
-    flex: 1; min-width: 200px; padding: 10px 14px;
-    border-radius: 10px; border: 1px solid #2c3348;
-    background: var(--bg-soft); color: var(--text); font-family: inherit;
-  }
-  .key-row button {
-    padding: 10px 22px; border-radius: 10px; border: none;
-    background: var(--accent); color: #fff; font-weight: 700;
-    cursor: pointer; font-family: inherit; font-size: .95rem;
-  }
   .movie-error { color: var(--text-dim); padding: 20px 0; }
 
   /* ===== Modal ===== */
@@ -307,7 +284,6 @@
   <div class="movies-head">
     <h2>🔥 มาแรงตอนนี้</h2>
     <span class="sub">ข้อมูลจาก TMDB — กดที่เรื่องเพื่อดูเรื่องย่อและที่ดูถูกลิขสิทธิ์ในไทย</span>
-    <button class="key-reset" id="keyReset" style="display:none">เปลี่ยน API key</button>
   </div>
   <div id="movieArea"></div>
 </section>
@@ -541,10 +517,8 @@ const PROVIDER_LINKS = {
 };
 
 // TMDB v3 API key สำหรับเว็บนี้ (ใช้ client-side ได้ตามเงื่อนไข personal use ของ TMDB)
-const TMDB_DEFAULT_KEY = "df7ee8dc869322253561a3d9e588113e";
-let tmdbKey = localStorage.getItem("moviehub-tmdb-key") || TMDB_DEFAULT_KEY;
+const tmdbKey = "df7ee8dc869322253561a3d9e588113e";
 const movieArea = document.getElementById("movieArea");
-const keyReset = document.getElementById("keyReset");
 const modalBg = document.getElementById("modalBg");
 const modalBox = document.getElementById("modalBox");
 
@@ -569,32 +543,6 @@ function tmdbFetch(path, params = {}) {
     if (!r.ok) throw new Error("TMDB error " + r.status);
     return r.json();
   });
-}
-
-function renderSetup(message) {
-  keyReset.style.display = "none";
-  movieArea.innerHTML = `
-    <div class="setup-card">
-      ${message ? `<p style="color:#f87171;margin-bottom:10px">${esc(message)}</p>` : ""}
-      <b>เปิดใช้งานส่วนนี้ฟรีใน 3 ขั้นตอน</b> (ใช้ TMDB API ถูกลิขสิทธิ์ ไม่มีค่าใช้จ่าย)
-      <ol>
-        <li>สมัครสมาชิกที่ <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener">themoviedb.org</a></li>
-        <li>ไปที่ <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">Settings → API</a> แล้วขอ API Key (เลือก Developer, กรอกข้อมูลคร่าว ๆ ได้เลย)</li>
-        <li>คัดลอก <b>API Key</b> (v3) หรือ <b>Read Access Token</b> (v4) มาวางด้านล่าง</li>
-      </ol>
-      <div class="key-row">
-        <input type="text" id="keyInput" placeholder="วาง TMDB API Key ที่นี่..." autocomplete="off">
-        <button id="keySave">บันทึก</button>
-      </div>
-      <p style="margin-top:10px;font-size:.83rem">key จะถูกเก็บไว้ในเบราว์เซอร์ของคุณเท่านั้น — ส่วนอื่นของเว็บใช้งานได้ตามปกติโดยไม่ต้องมี key</p>
-    </div>`;
-  document.getElementById("keySave").onclick = () => {
-    const v = document.getElementById("keyInput").value.trim();
-    if (!v) return;
-    tmdbKey = v;
-    localStorage.setItem("moviehub-tmdb-key", v);
-    loadMovies();
-  };
 }
 
 const ROWS = [
@@ -625,7 +573,6 @@ function movieCardHTML(m, type) {
 const itemCache = {};
 
 async function loadMovies() {
-  if (!tmdbKey) { renderSetup(); return; }
   movieArea.innerHTML = `<div class="movie-error">กำลังโหลด...</div>`;
   try {
     const results = await Promise.all(
@@ -641,17 +588,11 @@ async function loadMovies() {
     });
     if (!html) throw new Error("โหลดข้อมูลไม่ได้");
     movieArea.innerHTML = html;
-    keyReset.style.display = "inline";
     movieArea.querySelectorAll(".movie-card").forEach(el => {
       el.onclick = () => openItem(el.dataset.type, Number(el.dataset.id));
     });
   } catch (e) {
-    if (String(e).includes("401")) {
-      renderSetup("API key ไม่ถูกต้อง ลองตรวจสอบแล้ววางใหม่อีกครั้ง");
-    } else {
-      movieArea.innerHTML = `<div class="movie-error">โหลดข้อมูลไม่สำเร็จ (${esc(e.message || e)}) — ลองรีเฟรชหน้าอีกครั้ง</div>`;
-      keyReset.style.display = "inline";
-    }
+    movieArea.innerHTML = `<div class="movie-error">โหลดข้อมูลไม่สำเร็จ — ลองรีเฟรชหน้าอีกครั้ง</div>`;
   }
 }
 
@@ -703,12 +644,6 @@ async function openItem(type, id) {
 function closeModal() { modalBg.classList.remove("open"); }
 modalBg.addEventListener("click", e => { if (e.target === modalBg) closeModal(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
-
-keyReset.onclick = () => {
-  localStorage.removeItem("moviehub-tmdb-key");
-  tmdbKey = "";
-  renderSetup();
-};
 
 loadMovies();
 </script>
