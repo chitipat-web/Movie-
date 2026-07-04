@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MovieHub — รวมเว็บดูหนัง & สตรีมมิ่งยอดนิยม</title>
+<meta name="description" content="รวมเว็บดูหนัง ซีรีส์ อนิเมะ เพลง และสตรีมมิ่งถูกลิขสิทธิ์ยอดนิยม ค้นหาง่าย ครบจบในที่เดียว">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --bg-soft: #151823;
+    --card: #1a1e2c;
+    --card-hover: #222739;
+    --text: #eef0f6;
+    --text-dim: #9aa1b5;
+    --accent: #e50914;
+    --accent-2: #f5c518;
+    --chip: #242a3d;
+    --chip-active: #e50914;
+    --radius: 16px;
+    font-size: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Noto Sans Thai', 'Sarabun', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ===== Header ===== */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(13,15,20,.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #232838;
+  }
+  .header-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 1.35rem; font-weight: 800; letter-spacing: .5px;
+    white-space: nowrap;
+  }
+  .logo .clap { font-size: 1.6rem; }
+  .logo b { color: var(--accent); }
+  .search-wrap { flex: 1; min-width: 220px; position: relative; }
+  .search-wrap input {
+    width: 100%;
+    padding: 11px 42px 11px 42px;
+    border-radius: 999px;
+    border: 1px solid #2c3348;
+    background: var(--bg-soft);
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap .icon {
+    position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+    color: var(--text-dim); pointer-events: none;
+  }
+  .search-wrap .clear-btn {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--text-dim);
+    font-size: 1.1rem; cursor: pointer; display: none; padding: 4px;
+  }
+
+  /* ===== Hero ===== */
+  .hero {
+    max-width: 1200px; margin: 0 auto;
+    padding: 40px 20px 8px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    background: linear-gradient(90deg, #fff, #ffb3b7);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p { color: var(--text-dim); margin-top: 10px; font-size: 1.05rem; }
+
+  /* ===== Category chips ===== */
+  .chips {
+    max-width: 1200px; margin: 24px auto 0;
+    padding: 0 20px;
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  }
+  .chip {
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: var(--chip);
+    color: var(--text-dim);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: .95rem;
+    font-family: inherit;
+    transition: all .18s;
+    user-select: none;
+  }
+  .chip:hover { color: var(--text); border-color: #3a4160; }
+  .chip.active {
+    background: var(--chip-active);
+    color: #fff; font-weight: 700;
+    box-shadow: 0 4px 18px rgba(229,9,20,.35);
+  }
+
+  /* ===== Grid ===== */
+  main { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+  .section-title {
+    display: flex; align-items: center; gap: 10px;
+    margin: 10px 0 18px; font-size: 1.15rem; font-weight: 700;
+  }
+  .section-title .count {
+    font-size: .85rem; color: var(--text-dim); font-weight: 400;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid #252b40;
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: transform .18s, background .18s, border-color .18s;
+    position: relative;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    background: var(--card-hover);
+    border-color: #39415f;
+  }
+  .card-top { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 48px; height: 48px; flex-shrink: 0;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.25rem; color: #fff;
+  }
+  .card h3 { font-size: 1.08rem; }
+  .card .desc {
+    color: var(--text-dim); font-size: .9rem; line-height: 1.55;
+    flex: 1;
+  }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: .72rem; padding: 3px 10px;
+    border-radius: 999px; background: #242a3d; color: #aab2c8;
+  }
+  .tag.free { background: #143d26; color: #4ade80; }
+  .tag.paid { background: #3d2a14; color: #fbbf24; }
+  .card-actions { display: flex; gap: 10px; align-items: center; }
+  .visit-btn {
+    flex: 1;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px;
+    background: var(--accent);
+    color: #fff; text-decoration: none;
+    border-radius: 10px; font-weight: 700; font-size: .95rem;
+    transition: filter .15s;
+  }
+  .visit-btn:hover { filter: brightness(1.15); }
+  .fav-btn {
+    background: var(--chip); border: none; cursor: pointer;
+    width: 42px; height: 42px; border-radius: 10px;
+    font-size: 1.15rem; color: var(--text-dim);
+    transition: all .15s;
+  }
+  .fav-btn:hover { color: var(--accent-2); }
+  .fav-btn.faved { color: var(--accent-2); background: #3d3414; }
+
+  .empty {
+    text-align: center; color: var(--text-dim);
+    padding: 60px 0; font-size: 1.05rem;
+  }
+
+  /* ===== Footer ===== */
+  footer {
+    border-top: 1px solid #232838;
+    padding: 28px 20px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: .88rem;
+    line-height: 1.7;
+  }
+  footer b { color: var(--text); }
+
+  @media (max-width: 520px) {
+    .grid { grid-template-columns: 1fr; }
+    .hero { padding-top: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo"><span class="clap">🎬</span> Movie<b>Hub</b></div>
+    <div class="search-wrap">
+      <span class="icon">🔍</span>
+      <input type="search" id="search" placeholder="ค้นหาเว็บ เช่น Netflix, อนิเมะ, ดูฟรี..." autocomplete="off">
+      <button class="clear-btn" id="clearSearch" aria-label="ล้างคำค้นหา">✕</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>รวมเว็บดูหนัง & สตรีมมิ่งยอดนิยม</h1>
+  <p>ครบทุกเว็บถูกลิขสิทธิ์ — หนัง ซีรีส์ อนิเมะ กีฬา เพลง หาง่าย จบในที่เดียว</p>
+</section>
+
+<div class="chips" id="chips"></div>
+
+<main>
+  <div class="section-title" id="favSection" style="display:none">
+    ⭐ รายการโปรดของคุณ
+  </div>
+  <div class="grid" id="favGrid" style="display:none; margin-bottom:34px;"></div>
+
+  <div class="section-title">
+    <span id="sectionName">ทั้งหมด</span>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">ไม่พบเว็บที่ค้นหา ลองคำอื่นดูนะ 🙂</div>
+</main>
+
+<footer>
+  <b>MovieHub</b> — เว็บรวมลิงก์บริการสตรีมมิ่งถูกลิขสิทธิ์<br>
+  เราไม่ได้เป็นเจ้าของหรือให้บริการเนื้อหาใด ๆ เป็นเพียงตัวช่วยรวมลิงก์ไปยังผู้ให้บริการอย่างเป็นทางการเท่านั้น
+</footer>
+
+<script>
+const SITES = [
+  // ===== สตรีมมิ่งหลัก =====
+  { name: "Netflix", url: "https://www.netflix.com/th/", cat: "streaming", color: "#e50914", price: "paid",
+    desc: "สตรีมมิ่งอันดับหนึ่งของโลก หนัง ซีรีส์ ออริจินัลระดับรางวัล พากย์/ซับไทยครบ", tags: ["หนัง", "ซีรีส์", "ออริจินัล"] },
+  { name: "Disney+", url: "https://www.disneyplus.com/th-th", cat: "streaming", color: "#0d5be1", price: "paid",
+    desc: "รวม Disney, Marvel, Star Wars, Pixar และ National Geographic เหมาะกับทั้งครอบครัว", tags: ["หนัง", "ซีรีส์", "การ์ตูน"] },
+  { name: "Prime Video", url: "https://www.primevideo.com", cat: "streaming", color: "#00a8e1", price: "paid",
+    desc: "สตรีมมิ่งจาก Amazon มีหนังดังและซีรีส์ออริจินัลอย่าง The Boys, Fallout", tags: ["หนัง", "ซีรีส์"] },
+  { name: "HBO Max", url: "https://www.hbomax.com/th/th", cat: "streaming", color: "#7b2bf9", price: "paid",
+    desc: "ซีรีส์ระดับตำนานจาก HBO, หนัง Warner Bros. และ DC ครบทุกเรื่อง", tags: ["หนัง", "ซีรีส์", "DC"] },
+  { name: "Apple TV+", url: "https://tv.apple.com", cat: "streaming", color: "#555555", price: "paid",
+    desc: "ซีรีส์และหนังออริจินัลคุณภาพสูงจาก Apple เช่น Severance, Ted Lasso", tags: ["ซีรีส์", "ออริจินัล"] },
+  { name: "TrueID", url: "https://www.trueid.net", cat: "streaming", color: "#e8262d", price: "freemium",
+    desc: "แพลตฟอร์มไทย ดูหนัง ซีรีส์ กีฬา ทีวีสด มีทั้งแบบฟรีและพรีเมียม", tags: ["หนัง", "ทีวีสด", "กีฬา", "ไทย"] },
+  { name: "Monomax", url: "https://www.monomax.me", cat: "streaming", color: "#f7941d", price: "paid",
+    desc: "สตรีมมิ่งสัญชาติไทยจาก MONO หนังฝรั่ง หนังจีน ซีรีส์วาย พากย์ไทยเยอะ", tags: ["หนัง", "พากย์ไทย", "ไทย"] },
+
+  // ===== ดูฟรีถูกลิขสิทธิ์ =====
+  { name: "YouTube Movies", url: "https://www.youtube.com/movies", cat: "free", color: "#ff0000", price: "freemium",
+    desc: "เช่า/ซื้อหนังใหม่ และมีหนังฟรีถูกลิขสิทธิ์ (มีโฆษณา) ให้ดูจำนวนมาก", tags: ["หนัง", "เช่าหนัง", "ฟรี"] },
+  { name: "Viu", url: "https://www.viu.com/ott/th/th", cat: "free", color: "#fecb00", price: "freemium",
+    desc: "ซีรีส์เกาหลี ซีรีส์เอเชีย ดูฟรีมีโฆษณา ซับไทยไวมาก อัปเดตตามเกาหลี", tags: ["ซีรีส์เกาหลี", "ฟรี", "เอเชีย"] },
+  { name: "WeTV", url: "https://wetv.vip/th", cat: "free", color: "#ff5c38", price: "freemium",
+    desc: "ซีรีส์จีน อนิเมะจีน ซีรีส์ไทย จาก Tencent ดูฟรีได้หลายเรื่อง", tags: ["ซีรีส์จีน", "ฟรี", "เอเชีย"] },
+  { name: "iQIYI", url: "https://www.iq.com/?lang=th_th", cat: "free", color: "#00cc36", price: "freemium",
+    desc: "ซีรีส์จีน เกาหลี อนิเมะ และวาไรตี้ ดูฟรีเยอะ ซับไทยครบ", tags: ["ซีรีส์จีน", "ฟรี", "เอเชีย"] },
+  { name: "Plex", url: "https://www.plex.tv/watch-free", cat: "free", color: "#e5a00d", price: "free",
+    desc: "หนังและทีวีฟรีถูกลิขสิทธิ์กว่า 50,000 เรื่อง (มีโฆษณา) ไม่ต้องสมัครก็ดูได้", tags: ["หนัง", "ฟรี"] },
+  { name: "Bilibili (B站)", url: "https://www.bilibili.tv/th", cat: "free", color: "#00a1d6", price: "freemium",
+    desc: "อนิเมะ ซีรีส์จีน และคอนเทนต์ครีเอเตอร์ ดูฟรีซับไทยเพียบ", tags: ["อนิเมะ", "ฟรี", "ซีรีส์จีน"] },
+
+  // ===== อนิเมะ =====
+  { name: "Crunchyroll", url: "https://www.crunchyroll.com", cat: "anime", color: "#f47521", price: "freemium",
+    desc: "เว็บอนิเมะถูกลิขสิทธิ์ที่ใหญ่ที่สุดในโลก ซิมัลแคสต์ตามญี่ปุ่นทุกซีซัน", tags: ["อนิเมะ", "ซิมัลแคสต์"] },
+  { name: "Ani-One Asia", url: "https://www.youtube.com/@AniOneAsia", cat: "anime", color: "#7c3aed", price: "free",
+    desc: "ช่อง YouTube อนิเมะถูกลิขสิทธิ์ ดูฟรีซับไทย อัปเดตตามญี่ปุ่น", tags: ["อนิเมะ", "ฟรี", "YouTube"] },
+  { name: "Muse Thailand", url: "https://www.youtube.com/@MuseThailand", cat: "anime", color: "#e11d48", price: "free",
+    desc: "ช่อง YouTube อนิเมะซับไทยถูกลิขสิทธิ์ ดูฟรี มีอนิเมะดังครบทุกซีซัน", tags: ["อนิเมะ", "ฟรี", "YouTube"] },
+  { name: "Netflix Anime", url: "https://www.netflix.com/th/browse/genre/7424", cat: "anime", color: "#e50914", price: "paid",
+    desc: "หมวดอนิเมะบน Netflix มีทั้งเรื่องดังและออริจินัลเฉพาะแพลตฟอร์ม", tags: ["อนิเมะ", "ออริจินัล"] },
+
+  // ===== กีฬา =====
+  { name: "TrueVisions NOW", url: "https://www.truevisionsnow.com", cat: "sport", color: "#d71920", price: "paid",
+    desc: "ถ่ายทอดสดฟุตบอลพรีเมียร์ลีก กีฬาดัง และช่องทีวีครบ", tags: ["กีฬา", "ฟุตบอล", "ทีวีสด"] },
+  { name: "AIS PLAY", url: "https://www.aisplay.ais.co.th", cat: "sport", color: "#78be20", price: "freemium",
+    desc: "ทีวีสด กีฬา หนัง ซีรีส์ จาก AIS ดูฟรีหลายช่อง ไม่จำกัดค่าย", tags: ["กีฬา", "ทีวีสด", "ฟรี", "ไทย"] },
+  { name: "FIFA+", url: "https://www.plus.fifa.com", cat: "sport", color: "#326295", price: "free",
+    desc: "ฟุตบอลถ่ายทอดสดและแมตช์คลาสสิกจาก FIFA ดูฟรีถูกลิขสิทธิ์", tags: ["กีฬา", "ฟุตบอล", "ฟรี"] },
+
+  // ===== เพลง =====
+  { name: "Spotify", url: "https://open.spotify.com", cat: "music", color: "#1db954", price: "freemium",
+    desc: "ฟังเพลงและพอดแคสต์อันดับหนึ่งของโลก ฟรีมีโฆษณา", tags: ["เพลง", "พอดแคสต์", "ฟรี"] },
+  { name: "YouTube Music", url: "https://music.youtube.com", cat: "music", color: "#ff0000", price: "freemium",
+    desc: "สตรีมเพลงจาก YouTube ครบทั้งเพลงออฟฟิเชียลและไลฟ์หายาก", tags: ["เพลง", "ฟรี"] },
+  { name: "Apple Music", url: "https://music.apple.com/th/browse", cat: "music", color: "#fa2d48", price: "paid",
+    desc: "เพลงคุณภาพ Lossless และ Spatial Audio จาก Apple", tags: ["เพลง", "Lossless"] },
+
+  // ===== ข้อมูลหนัง / ตัวช่วย =====
+  { name: "IMDb", url: "https://www.imdb.com", cat: "info", color: "#f5c518", price: "free",
+    desc: "ฐานข้อมูลหนังใหญ่ที่สุดในโลก เช็กเรตติ้ง นักแสดง และข่าวหนัง", tags: ["เรตติ้ง", "ข้อมูลหนัง"] },
+  { name: "Rotten Tomatoes", url: "https://www.rottentomatoes.com", cat: "info", color: "#fa320a", price: "free",
+    desc: "คะแนนมะเขือเทศจากนักวิจารณ์ ช่วยตัดสินใจก่อนดู", tags: ["รีวิว", "เรตติ้ง"] },
+  { name: "JustWatch", url: "https://www.justwatch.com/th", cat: "info", color: "#fbc500", price: "free",
+    desc: "ค้นหาว่าหนัง/ซีรีส์เรื่องที่อยากดู สตรีมอยู่บนแพลตฟอร์มไหนในไทย", tags: ["ค้นหาหนัง", "ตัวช่วย"] },
+  { name: "MyDramaList", url: "https://mydramalist.com", cat: "info", color: "#1f4e8c", price: "free",
+    desc: "ฐานข้อมูลซีรีส์เอเชีย เกาหลี จีน ญี่ปุ่น ไทย พร้อมรีวิวจากแฟนซีรีส์", tags: ["ซีรีส์เอเชีย", "รีวิว"] },
+  { name: "MyAnimeList", url: "https://myanimelist.net", cat: "info", color: "#2e51a2", price: "free",
+    desc: "ฐานข้อมูลอนิเมะ/มังงะที่ใหญ่ที่สุด จัดอันดับและติดตามเรื่องที่ดู", tags: ["อนิเมะ", "จัดอันดับ"] },
+];
+
+const CATEGORIES = [
+  { id: "all", label: "🎯 ทั้งหมด" },
+  { id: "streaming", label: "🎬 สตรีมมิ่ง" },
+  { id: "free", label: "🆓 ดูฟรีถูกลิขสิทธิ์" },
+  { id: "anime", label: "⛩️ อนิเมะ" },
+  { id: "sport", label: "⚽ กีฬา" },
+  { id: "music", label: "🎵 เพลง" },
+  { id: "info", label: "📊 ข้อมูลหนัง" },
+];
+const CAT_LABEL = Object.fromEntries(CATEGORIES.map(c => [c.id, c.label.replace(/^\S+\s/, "")]));
+
+let activeCat = "all";
+let query = "";
+let favs = new Set(JSON.parse(localStorage.getItem("moviehub-favs") || "[]"));
+
+const chipsEl = document.getElementById("chips");
+const gridEl = document.getElementById("grid");
+const favGridEl = document.getElementById("favGrid");
+const favSectionEl = document.getElementById("favSection");
+const emptyEl = document.getElementById("empty");
+const countEl = document.getElementById("count");
+const sectionNameEl = document.getElementById("sectionName");
+const searchEl = document.getElementById("search");
+const clearBtn = document.getElementById("clearSearch");
+
+function renderChips() {
+  chipsEl.innerHTML = "";
+  for (const c of CATEGORIES) {
+    const b = document.createElement("button");
+    b.className = "chip" + (c.id === activeCat ? " active" : "");
+    b.textContent = c.label;
+    b.onclick = () => { activeCat = c.id; render(); };
+    chipsEl.appendChild(b);
+  }
+}
+
+function priceTag(p) {
+  if (p === "free") return '<span class="tag free">ดูฟรี</span>';
+  if (p === "freemium") return '<span class="tag free">มีแบบฟรี</span>';
+  return '<span class="tag paid">สมัครสมาชิก</span>';
+}
+
+function cardHTML(s) {
+  const faved = favs.has(s.name);
+  return `
+    <div class="card">
+      <div class="card-top">
+        <div class="avatar" style="background:${s.color}">${s.name[0]}</div>
+        <h3>${s.name}</h3>
+      </div>
+      <div class="desc">${s.desc}</div>
+      <div class="tags">${priceTag(s.price)}${s.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>
+      <div class="card-actions">
+        <a class="visit-btn" href="${s.url}" target="_blank" rel="noopener noreferrer">เข้าเว็บ ↗</a>
+        <button class="fav-btn ${faved ? "faved" : ""}" data-name="${s.name}" title="เพิ่มในรายการโปรด">${faved ? "★" : "☆"}</button>
+      </div>
+    </div>`;
+}
+
+function matches(s) {
+  if (activeCat !== "all" && s.cat !== activeCat) return false;
+  if (!query) return true;
+  const q = query.toLowerCase();
+  return s.name.toLowerCase().includes(q)
+    || s.desc.toLowerCase().includes(q)
+    || s.tags.some(t => t.toLowerCase().includes(q));
+}
+
+function render() {
+  renderChips();
+
+  // favorites section (only on "all" view without search)
+  const favSites = SITES.filter(s => favs.has(s.name));
+  const showFavs = favSites.length > 0 && activeCat === "all" && !query;
+  favSectionEl.style.display = showFavs ? "flex" : "none";
+  favGridEl.style.display = showFavs ? "grid" : "none";
+  if (showFavs) favGridEl.innerHTML = favSites.map(cardHTML).join("");
+
+  const list = SITES.filter(matches);
+  gridEl.innerHTML = list.map(cardHTML).join("");
+  emptyEl.style.display = list.length ? "none" : "block";
+  sectionNameEl.textContent = query ? `ผลการค้นหา “${query}”` : (CAT_LABEL[activeCat] || "ทั้งหมด");
+  countEl.textContent = `(${list.length} เว็บ)`;
+
+  document.querySelectorAll(".fav-btn").forEach(btn => {
+    btn.onclick = () => {
+      const n = btn.dataset.name;
+      favs.has(n) ? favs.delete(n) : favs.add(n);
+      localStorage.setItem("moviehub-favs", JSON.stringify([...favs]));
+      render();
+    };
+  });
+}
+
+searchEl.addEventListener("input", () => {
+  query = searchEl.value.trim();
+  clearBtn.style.display = query ? "block" : "none";
+  render();
+});
+clearBtn.addEventListener("click", () => {
+  searchEl.value = ""; query = "";
+  clearBtn.style.display = "none";
+  render(); searchEl.focus();
+});
+
+render();
+</script>
+</body>
+</html>
