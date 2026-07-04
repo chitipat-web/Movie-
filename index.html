@@ -328,6 +328,70 @@
   .movie-browse-grid .movie-card { width: auto; }
   .movie-browse-grid .movie-card:hover { transform: scale(1.05); }
 
+  /* ===== ดูฟรีในเว็บเรา ===== */
+  .free-card {
+    cursor: pointer; border-radius: var(--radius); overflow: hidden;
+    background: var(--card); position: relative;
+    flex: 0 0 auto; width: clamp(210px, 56vw, 300px);
+    scroll-snap-align: start;
+    transition: transform .2s ease;
+  }
+  .free-card:hover { transform: scale(1.05); z-index: 5; box-shadow: 0 8px 26px rgba(0,0,0,.6); }
+  .free-card .thumb {
+    width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;
+    background: linear-gradient(135deg, #2a2a2a, #161616);
+    color: transparent; font-size: 0;
+  }
+  .free-card .play-ovl {
+    position: absolute; top: 0; left: 0; right: 0; aspect-ratio: 16/9;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.25); opacity: 0; transition: opacity .2s;
+  }
+  .free-card:hover .play-ovl { opacity: 1; }
+  .free-card .play-ovl span {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(255,255,255,.92); color: #000;
+    display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    padding-left: 4px;
+  }
+  .free-card .f-info { padding: 9px 11px 11px; }
+  .free-card .f-title { font-size: .88rem; font-weight: 600; line-height: 1.35; }
+  .free-card .f-meta { color: var(--text-dim); font-size: .75rem; margin-top: 3px; display: flex; gap: 8px; align-items: center; }
+  .free-badge {
+    background: #143d26; color: #4ade80;
+    padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 700;
+  }
+  .free-browse-grid {
+    display: grid; gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(200px, 60vw, 280px), 1fr));
+    padding: 6px clamp(20px, 5vw, 56px) 26px;
+  }
+  .free-browse-grid .free-card { width: auto; }
+
+  /* player modal */
+  .player-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,.92);
+    display: none; align-items: center; justify-content: center;
+    z-index: 200; padding: 16px;
+  }
+  .player-bg.open { display: flex; }
+  .player-box { width: min(960px, 100%); }
+  .player-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 10px;
+  }
+  .player-top h3 { font-size: 1.05rem; font-weight: 700; }
+  .player-close {
+    background: var(--chip); border: none; color: #fff;
+    width: 40px; height: 40px; border-radius: 50%; font-size: 1.05rem; cursor: pointer; flex-shrink: 0;
+  }
+  .player-close:hover { background: var(--accent); }
+  .player-frame {
+    width: 100%; aspect-ratio: 16/9; border: none; border-radius: 8px;
+    background: #000; display: block;
+  }
+  .player-note { color: var(--text-dim); font-size: .8rem; margin-top: 10px; text-align: center; }
+
   /* ===== Sites popup (รวมเว็บทั้งหมด) ===== */
   .sites-modal-bg {
     position: fixed; inset: 0; background: rgba(0,0,0,.78);
@@ -486,6 +550,27 @@
 <div class="modal-bg" id="modalBg">
   <div class="modal" id="modalBox"></div>
 </div>
+
+<div class="player-bg" id="playerBg">
+  <div class="player-box">
+    <div class="player-top">
+      <h3 id="playerTitle"></h3>
+      <button class="player-close" id="playerClose" aria-label="ปิด">✕</button>
+    </div>
+    <iframe class="player-frame" id="playerFrame" allow="autoplay; fullscreen; encrypted-media" allowfullscreen referrerpolicy="no-referrer"></iframe>
+    <p class="player-note">เนื้อหาถูกลิขสิทธิ์ให้รับชมฟรี — เล่นผ่าน YouTube / Internet Archive</p>
+  </div>
+</div>
+
+<div class="player-bg" id="playerBg">
+  <div class="player-box">
+    <div class="player-top">
+      <h3 id="playerTitle"></h3>
+      <button class="player-close" id="playerClose" aria-label="ปิด">✕</button>
+    </div>
+    <iframe class="player-frame" id="playerFrame" src="about:blank" allowfullscreen
+      allow="fullscreen; autoplay; encrypted-media" title="เครื่องเล่นวิดีโอ"></iframe>
+    <div class="player-note">หนังเรื่องนี้เป็นสาธารณสมบัติ (
 
 <div class="sites-modal-bg" id="sitesModalBg">
   <div class="sites-modal">
@@ -754,6 +839,51 @@ const ROWS = [
   { title: "📺 ซีรีส์ยอดนิยม", path: "/trending/tv/week", type: "tv" },
 ];
 
+// หนังเต็มเรื่องถูกลิขสิทธิ์ให้ดูฟรี — เล่นในเว็บได้เลย
+// src: "ia" = Internet Archive (public domain), "yt" = YouTube (ช่องทางการ)
+const FREE_MOVIES = [
+  { src: "ia", id: "his_girl_friday", title: "His Girl Friday", year: "1940", genre: "ตลก" },
+  { src: "ia", id: "my_favorite_brunette", title: "My Favorite Brunette", year: "1947", genre: "ตลก/ลึกลับ" },
+  { src: "ia", id: "suddenly", title: "Suddenly", year: "1954", genre: "ระทึกขวัญ" },
+  { src: "ia", id: "gullivers_travels1939", title: "Gulliver's Travels", year: "1939", genre: "แอนิเมชัน" },
+  { src: "ia", id: "JungleBook", title: "Jungle Book", year: "1942", genre: "ผจญภัย" },
+  { src: "ia", id: "20000LeaguesUndertheSea", title: "20,000 Leagues Under the Sea", year: "1916", genre: "ผจญภัย/ไซไฟ" },
+  { src: "ia", id: "lost_world", title: "The Lost World", year: "1925", genre: "ผจญภัย" },
+  { src: "ia", id: "ThePhantomoftheOpera", title: "The Phantom of the Opera", year: "1925", genre: "สยองขวัญ" },
+  { src: "ia", id: "DasKabinettdesDoktorCaligariTheCabinetofDrCaligari", title: "The Cabinet of Dr. Caligari", year: "1919", genre: "สยองขวัญ" },
+  { src: "ia", id: "house_on_haunted_hill_ipod", title: "House on Haunted Hill", year: "1959", genre: "สยองขวัญ" },
+  { src: "ia", id: "charlie_chaplin_film_fest", title: "Charlie Chaplin Festival", year: "1938", genre: "ตลก" },
+  { src: "ia", id: "Sita_Sings_the_Blues", title: "Sita Sings the Blues", year: "2008", genre: "แอนิเมชัน" },
+];
+
+function freeThumb(f) {
+  return f.src === "yt"
+    ? `https://img.youtube.com/vi/${f.id}/hqdefault.jpg`
+    : `https://archive.org/services/img/${f.id}`;
+}
+function freeEmbed(f) {
+  return f.src === "yt"
+    ? `https://www.youtube.com/embed/${f.id}?autoplay=1&rel=0`
+    : `https://archive.org/embed/${f.id}`;
+}
+
+function freeCardHTML(f, i) {
+  return `
+    <div class="free-card" data-fi="${i}">
+      <img class="thumb" src="${freeThumb(f)}" alt="${esc(f.title)}" loading="lazy">
+      <div class="play-ovl"><span>▶</span></div>
+      <div class="f-info">
+        <div class="f-title">${esc(f.title)}</div>
+        <div class="f-meta"><span class="free-badge">ดูฟรีในเว็บ</span><span>${f.year} · ${esc(f.genre)}</span></div>
+      </div>
+    </div>`;
+}
+
+function freeRowHTML() {
+  return `<div class="row-title" id="freeRow">🎬 ดูฟรีในเว็บเรา (ถูกลิขสิทธิ์)</div>
+    <div class="movie-grid">${FREE_MOVIES.map((f, i) => freeCardHTML(f, i)).join("")}</div>`;
+}
+
 function movieCardHTML(m, type) {
   const title = m.title || m.name || "";
   const year = ((m.release_date || m.first_air_date) || "").slice(0, 4);
@@ -813,7 +943,30 @@ function attachCardHandlers() {
   movieArea.querySelectorAll(".movie-card").forEach(el => {
     el.onclick = () => openItem(el.dataset.type, Number(el.dataset.id));
   });
+  movieArea.querySelectorAll(".free-card").forEach(el => {
+    el.onclick = () => openPlayer(FREE_MOVIES[Number(el.dataset.fi)]);
+  });
 }
+
+/* ===== เครื่องเล่นหนังฟรีในเว็บ ===== */
+const playerBg = document.getElementById("playerBg");
+const playerFrame = document.getElementById("playerFrame");
+const playerTitle = document.getElementById("playerTitle");
+function openPlayer(f) {
+  if (!f) return;
+  playerTitle.textContent = `${f.title} (${f.year})`;
+  playerFrame.src = freeEmbed(f);
+  playerBg.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closePlayer() {
+  playerBg.classList.remove("open");
+  playerFrame.src = "";
+  document.body.style.overflow = "";
+}
+document.getElementById("playerClose").onclick = closePlayer;
+playerBg.addEventListener("click", e => { if (e.target === playerBg) closePlayer(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closePlayer(); });
 
 async function loadMovies() {
   movieArea.innerHTML = `<div class="movie-error">กำลังโหลด...</div>`;
@@ -835,6 +988,7 @@ async function loadMovies() {
         <div class="movie-grid">${items.map(m => movieCardHTML(m, row.type)).join("")}</div>`;
     });
     if (!html) throw new Error("โหลดข้อมูลไม่ได้");
+    html += freeRowHTML();
     rowsHTML = html;
     movieArea.innerHTML = html;
     attachCardHandlers();
@@ -847,6 +1001,7 @@ async function loadMovies() {
 /* ===== แถบเลือกหมวดหนัง (genre) ===== */
 const GENRES = [
   { id: "trending", label: "🔥 มาแรง" },
+  { id: "free", label: "🆓 ดูฟรีในเว็บ" },
   { id: 28, label: "แอ็คชั่น" },
   { id: 35, label: "ตลก" },
   { id: 27, label: "สยองขวัญ" },
@@ -886,6 +1041,12 @@ async function selectGenre(id) {
   currentGenre = id;
   highlightGenre(id);
   if (id === "trending") { showTrending(); return; }
+  if (id === "free") {
+    movieArea.innerHTML = `<div class="row-title">🎬 ดูฟรีในเว็บเรา (ถูกลิขสิทธิ์)</div>
+      <div class="free-browse-grid">${FREE_MOVIES.map((f, i) => freeCardHTML(f, i)).join("")}</div>`;
+    attachCardHandlers();
+    return;
+  }
   const label = (GENRES.find(g => String(g.id) === String(id)) || {}).label || "";
   movieArea.innerHTML = `<div class="movie-error">กำลังโหลดหนัง${label}...</div>`;
   try {
