@@ -45,6 +45,48 @@
     font-size: 1.35rem; font-weight: 800; letter-spacing: .5px;
     white-space: nowrap;
   }
+  .menu-btn {
+    background: none; border: none; color: var(--text);
+    font-size: 1.5rem; cursor: pointer; padding: 2px 6px; line-height: 1;
+  }
+
+  /* ===== Drawer menu ===== */
+  .drawer-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,.55);
+    opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 150;
+  }
+  .drawer-bg.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: min(320px, 85vw);
+    background: var(--bg-soft); border-right: 1px solid #232838;
+    z-index: 160; transform: translateX(-100%); transition: transform .25s;
+    padding: 18px; overflow-y: auto;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .drawer-close {
+    background: var(--chip); border: none; color: var(--text);
+    width: 36px; height: 36px; border-radius: 50%; font-size: 1rem; cursor: pointer;
+  }
+  .drawer-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    width: 100%; text-align: left; background: none; border: none;
+    color: var(--text); font-size: 1.02rem; font-weight: 600;
+    padding: 14px 8px; border-bottom: 1px solid #20263a;
+    cursor: pointer; font-family: inherit;
+  }
+  .drawer-item:hover { color: var(--accent-2); }
+  .drawer-item .arrow { transition: transform .2s; color: var(--text-dim); font-size: .85rem; }
+  .drawer-item.expanded .arrow { transform: rotate(180deg); }
+  .drawer-sub { display: none; }
+  .drawer-sub.open { display: block; }
+  .drawer-item.sub {
+    font-weight: 400; font-size: .95rem; color: var(--text-dim);
+    padding: 11px 8px 11px 24px; border-bottom: none;
+  }
+  .drawer-item.sub:hover { color: var(--text); }
+  .row-title, main, .section-title { scroll-margin-top: 84px; }
   .logo .clap { font-size: 1.6rem; }
   .logo b { color: var(--accent); }
   .search-wrap { flex: 1; min-width: 220px; position: relative; }
@@ -266,6 +308,7 @@
 
 <header>
   <div class="header-inner">
+    <button class="menu-btn" id="menuBtn" aria-label="เปิดเมนู">☰</button>
     <div class="logo"><span class="clap">🎬</span> Movie<b>Hub</b></div>
     <div class="search-wrap">
       <span class="icon">🔍</span>
@@ -279,6 +322,23 @@
   <h1>รวมเว็บดูหนัง & สตรีมมิ่งยอดนิยม</h1>
   <p>ครบทุกเว็บถูกลิขสิทธิ์ — หนัง ซีรีส์ อนิเมะ กีฬา เพลง หาง่าย จบในที่เดียว</p>
 </section>
+
+<div class="drawer-bg" id="drawerBg"></div>
+<nav class="drawer" id="drawer" aria-label="เมนูหลัก">
+  <div class="drawer-head">
+    <div class="logo" style="font-size:1.15rem"><span class="clap">🎬</span> Movie<b>Hub</b></div>
+    <button class="drawer-close" id="drawerClose" aria-label="ปิดเมนู">✕</button>
+  </div>
+  <button class="drawer-item has-sub" data-acc="trend">🔥 มาแรงตอนนี้ <span class="arrow">▼</span></button>
+  <div class="drawer-sub" id="acc-trend">
+    <button class="drawer-item sub" data-row="0">🍿 หนังยอดนิยมสัปดาห์นี้</button>
+    <button class="drawer-item sub" data-row="1">🎬 กำลังฉายในโรง</button>
+    <button class="drawer-item sub" data-row="2">📺 ซีรีส์ยอดนิยม</button>
+  </div>
+  <button class="drawer-item has-sub" data-acc="cats">🗂️ หมวดเว็บสตรีมมิ่ง <span class="arrow">▼</span></button>
+  <div class="drawer-sub" id="acc-cats"></div>
+  <button class="drawer-item" id="drawerFav">⭐ รายการโปรด</button>
+</nav>
 
 <section class="movies-sec">
   <div class="movies-head">
@@ -590,7 +650,7 @@ async function loadMovies() {
       const items = ((results[i] || {}).results || []).slice(0, 12);
       if (!items.length) return;
       items.forEach(m => { itemCache[row.type + ":" + m.id] = m; });
-      html += `<div class="row-title">${row.title}</div>
+      html += `<div class="row-title" id="trow-${i}">${row.title}</div>
         <div class="movie-grid">${items.map(m => movieCardHTML(m, row.type)).join("")}</div>`;
     });
     if (!html) throw new Error("โหลดข้อมูลไม่ได้");
@@ -678,6 +738,66 @@ async function openItem(type, id) {
 function closeModal() { modalBg.classList.remove("open"); }
 modalBg.addEventListener("click", e => { if (e.target === modalBg) closeModal(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+/* ===== เมนูด้านข้าง ===== */
+const drawer = document.getElementById("drawer");
+const drawerBg = document.getElementById("drawerBg");
+
+function openDrawer() { drawer.classList.add("open"); drawerBg.classList.add("open"); }
+function closeDrawer() { drawer.classList.remove("open"); drawerBg.classList.remove("open"); }
+document.getElementById("menuBtn").onclick = openDrawer;
+document.getElementById("drawerClose").onclick = closeDrawer;
+drawerBg.onclick = closeDrawer;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+
+// หัวข้อแบบกดขยาย/ยุบ
+document.querySelectorAll(".drawer-item.has-sub").forEach(btn => {
+  btn.onclick = () => {
+    document.getElementById("acc-" + btn.dataset.acc).classList.toggle("open");
+    btn.classList.toggle("expanded");
+  };
+});
+
+function clearSearchState() {
+  if (!searchEl.value) return;
+  searchEl.value = ""; query = "";
+  clearBtn.style.display = "none";
+  render();
+  if (rowsHTML) { movieArea.innerHTML = rowsHTML; attachCardHandlers(); }
+}
+
+// เมนูย่อย: แถวมาแรง
+document.querySelectorAll(".drawer-item[data-row]").forEach(btn => {
+  btn.onclick = () => {
+    closeDrawer();
+    clearSearchState();
+    const el = document.getElementById("trow-" + btn.dataset.row);
+    (el || movieArea).scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+});
+
+// เมนูย่อย: หมวดเว็บ (สร้างจาก CATEGORIES)
+const accCats = document.getElementById("acc-cats");
+accCats.innerHTML = CATEGORIES.map(c => `<button class="drawer-item sub" data-cat="${c.id}">${c.label}</button>`).join("");
+accCats.querySelectorAll("[data-cat]").forEach(btn => {
+  btn.onclick = () => {
+    closeDrawer();
+    clearSearchState();
+    activeCat = btn.dataset.cat;
+    render();
+    document.querySelector("main").scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+});
+
+// รายการโปรด
+document.getElementById("drawerFav").onclick = () => {
+  closeDrawer();
+  clearSearchState();
+  activeCat = "all";
+  render();
+  const target = favs.size ? document.getElementById("favSection") : document.querySelector("main");
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+};
 
 loadMovies();
 </script>
