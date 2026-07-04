@@ -196,6 +196,8 @@
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 14px;
   }
+  .row-title { font-size: 1.05rem; font-weight: 700; margin: 28px 0 14px; }
+  #movieArea .row-title:first-child { margin-top: 0; }
   .movie-card {
     cursor: pointer; border-radius: 12px; overflow: hidden;
     background: var(--card); border: 1px solid #252b40;
@@ -303,8 +305,8 @@
 
 <section class="movies-sec">
   <div class="movies-head">
-    <h2>🍿 หนังยอดนิยมสัปดาห์นี้</h2>
-    <span class="sub">ข้อมูลจาก TMDB — กดที่หนังเพื่อดูเรื่องย่อและที่ดูถูกลิขสิทธิ์ในไทย</span>
+    <h2>🔥 มาแรงตอนนี้</h2>
+    <span class="sub">ข้อมูลจาก TMDB — กดที่เรื่องเพื่อดูเรื่องย่อและที่ดูถูกลิขสิทธิ์ในไทย</span>
     <button class="key-reset" id="keyReset" style="display:none">เปลี่ยน API key</button>
   </div>
   <div id="movieArea"></div>
@@ -595,16 +597,23 @@ function renderSetup(message) {
   };
 }
 
-function movieCardHTML(m) {
-  const year = (m.release_date || "").slice(0, 4);
+const ROWS = [
+  { title: "🍿 หนังยอดนิยมสัปดาห์นี้", path: "/trending/movie/week", type: "movie" },
+  { title: "🎬 กำลังฉายในโรง", path: "/movie/now_playing", params: { region: "TH" }, type: "movie" },
+  { title: "📺 ซีรีส์ยอดนิยม", path: "/trending/tv/week", type: "tv" },
+];
+
+function movieCardHTML(m, type) {
+  const title = m.title || m.name || "";
+  const year = ((m.release_date || m.first_air_date) || "").slice(0, 4);
   const poster = m.poster_path
-    ? `<img src="${TMDB_IMG}${m.poster_path}" alt="${esc(m.title)}" loading="lazy">`
+    ? `<img src="${TMDB_IMG}${m.poster_path}" alt="${esc(title)}" loading="lazy">`
     : `<div style="aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:2rem">🎬</div>`;
   return `
-    <div class="movie-card" data-id="${m.id}">
+    <div class="movie-card" data-id="${m.id}" data-type="${type}">
       ${poster}
       <div class="m-info">
-        <div class="m-title">${esc(m.title)}</div>
+        <div class="m-title">${esc(title)}</div>
         <div class="m-meta">
           <span>${year || "—"}</span>
           <span class="m-rating">★ ${(m.vote_average || 0).toFixed(1)}</span>
@@ -613,18 +622,28 @@ function movieCardHTML(m) {
     </div>`;
 }
 
-let movieList = [];
+const itemCache = {};
 
 async function loadMovies() {
   if (!tmdbKey) { renderSetup(); return; }
-  movieArea.innerHTML = `<div class="movie-error">กำลังโหลดหนังยอดนิยม...</div>`;
+  movieArea.innerHTML = `<div class="movie-error">กำลังโหลด...</div>`;
   try {
-    const data = await tmdbFetch("/trending/movie/week");
-    movieList = (data.results || []).slice(0, 12);
-    movieArea.innerHTML = `<div class="movie-grid">${movieList.map(movieCardHTML).join("")}</div>`;
+    const results = await Promise.all(
+      ROWS.map(r => tmdbFetch(r.path, r.params || {}).catch(e => { if (String(e).includes("401")) throw e; return null; }))
+    );
+    let html = "";
+    ROWS.forEach((row, i) => {
+      const items = ((results[i] || {}).results || []).slice(0, 12);
+      if (!items.length) return;
+      items.forEach(m => { itemCache[row.type + ":" + m.id] = m; });
+      html += `<div class="row-title">${row.title}</div>
+        <div class="movie-grid">${items.map(m => movieCardHTML(m, row.type)).join("")}</div>`;
+    });
+    if (!html) throw new Error("โหลดข้อมูลไม่ได้");
+    movieArea.innerHTML = html;
     keyReset.style.display = "inline";
     movieArea.querySelectorAll(".movie-card").forEach(el => {
-      el.onclick = () => openMovie(Number(el.dataset.id));
+      el.onclick = () => openItem(el.dataset.type, Number(el.dataset.id));
     });
   } catch (e) {
     if (String(e).includes("401")) {
@@ -644,14 +663,16 @@ function providerLink(name, fallback) {
   return fallback;
 }
 
-async function openMovie(id) {
-  const m = movieList.find(x => x.id === id);
+async function openItem(type, id) {
+  const m = itemCache[type + ":" + id];
   if (!m) return;
-  const year = (m.release_date || "").slice(0, 4);
+  const title = m.title || m.name || "";
+  const year = ((m.release_date || m.first_air_date) || "").slice(0, 4);
+  const kind = type === "tv" ? "ซีรีส์" : "หนัง";
   modalBox.innerHTML = `
     <button class="close" aria-label="ปิด">✕</button>
-    <h3>${esc(m.title)}</h3>
-    <div class="meta">${year || ""} · ★ ${(m.vote_average || 0).toFixed(1)}/10 (${m.vote_count || 0} โหวต)</div>
+    <h3>${esc(title)}</h3>
+    <div class="meta">${kind}${year ? " · " + year : ""} · ★ ${(m.vote_average || 0).toFixed(1)}/10 (${m.vote_count || 0} โหวต)</div>
     <div class="overview">${esc(m.overview) || "ไม่มีเรื่องย่อภาษาไทย"}</div>
     <div class="watch-title">📺 ดูถูกลิขสิทธิ์ได้ที่</div>
     <div class="providers" id="provArea">กำลังตรวจสอบ...</div>`;
@@ -659,7 +680,7 @@ async function openMovie(id) {
   modalBox.querySelector(".close").onclick = closeModal;
 
   try {
-    const data = await tmdbFetch(`/movie/${id}/watch/providers`);
+    const data = await tmdbFetch(`/${type}/${id}/watch/providers`);
     const th = (data.results || {}).TH;
     const provArea = document.getElementById("provArea");
     if (!provArea) return;
