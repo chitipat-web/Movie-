@@ -571,6 +571,13 @@ function movieCardHTML(m, type) {
 }
 
 const itemCache = {};
+let rowsHTML = null;
+
+function attachCardHandlers() {
+  movieArea.querySelectorAll(".movie-card").forEach(el => {
+    el.onclick = () => openItem(el.dataset.type, Number(el.dataset.id));
+  });
+}
 
 async function loadMovies() {
   movieArea.innerHTML = `<div class="movie-error">กำลังโหลด...</div>`;
@@ -587,14 +594,41 @@ async function loadMovies() {
         <div class="movie-grid">${items.map(m => movieCardHTML(m, row.type)).join("")}</div>`;
     });
     if (!html) throw new Error("โหลดข้อมูลไม่ได้");
+    rowsHTML = html;
     movieArea.innerHTML = html;
-    movieArea.querySelectorAll(".movie-card").forEach(el => {
-      el.onclick = () => openItem(el.dataset.type, Number(el.dataset.id));
-    });
+    attachCardHandlers();
   } catch (e) {
     movieArea.innerHTML = `<div class="movie-error">โหลดข้อมูลไม่สำเร็จ — ลองรีเฟรชหน้าอีกครั้ง</div>`;
   }
 }
+
+/* ค้นหาหนัง/ซีรีส์จาก TMDB ผ่านช่องค้นหาเดียวกัน */
+async function searchTMDB(q) {
+  if (!q) {
+    if (rowsHTML) { movieArea.innerHTML = rowsHTML; attachCardHandlers(); }
+    return;
+  }
+  try {
+    const data = await tmdbFetch("/search/multi", { query: q });
+    if (q !== searchEl.value.trim()) return; // ผลลัพธ์เก่า ข้ามไป
+    const items = (data.results || [])
+      .filter(x => (x.media_type === "movie" || x.media_type === "tv") && (x.poster_path || x.overview))
+      .slice(0, 12);
+    items.forEach(m => { itemCache[m.media_type + ":" + m.id] = m; });
+    movieArea.innerHTML = items.length
+      ? `<div class="row-title">🔍 หนัง/ซีรีส์ที่ตรงกับ “${esc(q)}”</div>
+         <div class="movie-grid">${items.map(m => movieCardHTML(m, m.media_type)).join("")}</div>`
+      : `<div class="movie-error">ไม่พบหนัง/ซีรีส์ชื่อ “${esc(q)}” — ลองสะกดแบบอื่นหรือชื่อภาษาอังกฤษ</div>`;
+    attachCardHandlers();
+  } catch {}
+}
+
+let searchTimer;
+searchEl.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => searchTMDB(searchEl.value.trim()), 350);
+});
+clearBtn.addEventListener("click", () => { clearTimeout(searchTimer); searchTMDB(""); });
 
 function providerLink(name, fallback) {
   const n = name.toLowerCase();
