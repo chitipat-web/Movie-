@@ -182,6 +182,90 @@
     padding: 60px 0; font-size: 1.05rem;
   }
 
+  /* ===== Movies (TMDB) ===== */
+  .movies-sec { max-width: 1200px; margin: 38px auto 0; padding: 0 20px; }
+  .movies-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .movies-head h2 { font-size: 1.2rem; }
+  .movies-head .sub { color: var(--text-dim); font-size: .85rem; flex: 1; }
+  .key-reset {
+    background: none; border: none; color: var(--text-dim);
+    cursor: pointer; font-size: .8rem; text-decoration: underline; font-family: inherit;
+  }
+  .movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+  }
+  .movie-card {
+    cursor: pointer; border-radius: 12px; overflow: hidden;
+    background: var(--card); border: 1px solid #252b40;
+    transition: transform .15s, border-color .15s;
+  }
+  .movie-card:hover { transform: translateY(-4px); border-color: #39415f; }
+  .movie-card img { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: #10131c; }
+  .movie-card .m-info { padding: 9px 10px 11px; }
+  .movie-card .m-title {
+    font-size: .85rem; font-weight: 600; line-height: 1.35;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .movie-card .m-meta {
+    color: var(--text-dim); font-size: .75rem; margin-top: 4px;
+    display: flex; justify-content: space-between;
+  }
+  .m-rating { color: var(--accent-2); font-weight: 700; }
+  .setup-card {
+    background: var(--card); border: 1px dashed #39415f;
+    border-radius: var(--radius); padding: 24px;
+    line-height: 1.85; color: var(--text-dim); font-size: .95rem;
+  }
+  .setup-card b { color: var(--text); }
+  .setup-card ol { margin: 8px 0 16px 22px; }
+  .setup-card a { color: var(--accent-2); }
+  .key-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .key-row input {
+    flex: 1; min-width: 200px; padding: 10px 14px;
+    border-radius: 10px; border: 1px solid #2c3348;
+    background: var(--bg-soft); color: var(--text); font-family: inherit;
+  }
+  .key-row button {
+    padding: 10px 22px; border-radius: 10px; border: none;
+    background: var(--accent); color: #fff; font-weight: 700;
+    cursor: pointer; font-family: inherit; font-size: .95rem;
+  }
+  .movie-error { color: var(--text-dim); padding: 20px 0; }
+
+  /* ===== Modal ===== */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,.72);
+    backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 100; padding: 20px;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--bg-soft); border: 1px solid #39415f;
+    border-radius: var(--radius);
+    max-width: 560px; width: 100%; max-height: 85vh; overflow-y: auto;
+    padding: 26px; position: relative;
+  }
+  .modal .close {
+    position: absolute; top: 12px; right: 14px;
+    background: none; border: none; color: var(--text-dim);
+    font-size: 1.3rem; cursor: pointer;
+  }
+  .modal h3 { font-size: 1.25rem; margin-bottom: 4px; padding-right: 32px; }
+  .modal .meta { color: var(--text-dim); font-size: .85rem; margin-bottom: 14px; }
+  .modal .overview { color: var(--text-dim); line-height: 1.75; font-size: .92rem; margin-bottom: 18px; }
+  .watch-title { font-weight: 700; margin-bottom: 10px; font-size: .95rem; }
+  .providers { display: flex; gap: 8px; flex-wrap: wrap; }
+  .provider {
+    display: inline-block; padding: 7px 15px; border-radius: 999px;
+    background: var(--chip); color: var(--text); text-decoration: none;
+    font-size: .85rem; border: 1px solid #39415f;
+  }
+  .provider:hover { border-color: var(--accent); }
+  .providers .none { color: var(--text-dim); font-size: .88rem; }
+
   /* ===== Footer ===== */
   footer {
     border-top: 1px solid #232838;
@@ -217,6 +301,19 @@
   <p>ครบทุกเว็บถูกลิขสิทธิ์ — หนัง ซีรีส์ อนิเมะ กีฬา เพลง หาง่าย จบในที่เดียว</p>
 </section>
 
+<section class="movies-sec">
+  <div class="movies-head">
+    <h2>🍿 หนังยอดนิยมสัปดาห์นี้</h2>
+    <span class="sub">ข้อมูลจาก TMDB — กดที่หนังเพื่อดูเรื่องย่อและที่ดูถูกลิขสิทธิ์ในไทย</span>
+    <button class="key-reset" id="keyReset" style="display:none">เปลี่ยน API key</button>
+  </div>
+  <div id="movieArea"></div>
+</section>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modalBox"></div>
+</div>
+
 <div class="chips" id="chips"></div>
 
 <main>
@@ -235,7 +332,8 @@
 
 <footer>
   <b>MovieHub</b> — เว็บรวมลิงก์บริการสตรีมมิ่งถูกลิขสิทธิ์<br>
-  เราไม่ได้เป็นเจ้าของหรือให้บริการเนื้อหาใด ๆ เป็นเพียงตัวช่วยรวมลิงก์ไปยังผู้ให้บริการอย่างเป็นทางการเท่านั้น
+  เราไม่ได้เป็นเจ้าของหรือให้บริการเนื้อหาใด ๆ เป็นเพียงตัวช่วยรวมลิงก์ไปยังผู้ให้บริการอย่างเป็นทางการเท่านั้น<br>
+  ข้อมูลหนังและรูปภาพจาก <a href="https://www.themoviedb.org" target="_blank" rel="noopener" style="color:var(--accent-2)">TMDB</a> — This product uses the TMDB API but is not endorsed or certified by TMDB.
 </footer>
 
 <script>
@@ -415,6 +513,181 @@ clearBtn.addEventListener("click", () => {
 });
 
 render();
+
+/* ===== หนังยอดนิยมจาก TMDB ===== */
+const TMDB_API = "https://api.themoviedb.org/3";
+const TMDB_IMG = "https://image.tmdb.org/t/p/w342";
+// ลิงก์หน้าแรกของผู้ให้บริการที่รู้จัก (map จากชื่อ provider ของ TMDB)
+const PROVIDER_LINKS = {
+  "netflix": "https://www.netflix.com/th/",
+  "disney": "https://www.disneyplus.com/th-th",
+  "amazon prime": "https://www.primevideo.com",
+  "prime video": "https://www.primevideo.com",
+  "hbo": "https://www.hbomax.com/th/th",
+  "apple tv": "https://tv.apple.com",
+  "youtube": "https://www.youtube.com/movies",
+  "iqiyi": "https://www.iq.com/?lang=th_th",
+  "wetv": "https://wetv.vip/th",
+  "viu": "https://www.viu.com/ott/th/th",
+  "trueid": "https://www.trueid.net",
+  "true id": "https://www.trueid.net",
+  "monomax": "https://www.monomax.me",
+  "crunchyroll": "https://www.crunchyroll.com",
+  "bilibili": "https://www.bilibili.tv/th",
+  "google play": "https://play.google.com/store/movies",
+  "plex": "https://www.plex.tv/watch-free",
+};
+
+let tmdbKey = localStorage.getItem("moviehub-tmdb-key") || "";
+const movieArea = document.getElementById("movieArea");
+const keyReset = document.getElementById("keyReset");
+const modalBg = document.getElementById("modalBg");
+const modalBox = document.getElementById("modalBox");
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
+function tmdbFetch(path, params = {}) {
+  const u = new URL(TMDB_API + path);
+  u.searchParams.set("language", "th-TH");
+  for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
+  const opts = {};
+  if (tmdbKey.includes(".")) {
+    // v4 Read Access Token (JWT)
+    opts.headers = { Authorization: "Bearer " + tmdbKey };
+  } else {
+    // v3 API key
+    u.searchParams.set("api_key", tmdbKey);
+  }
+  return fetch(u, opts).then(r => {
+    if (!r.ok) throw new Error("TMDB error " + r.status);
+    return r.json();
+  });
+}
+
+function renderSetup(message) {
+  keyReset.style.display = "none";
+  movieArea.innerHTML = `
+    <div class="setup-card">
+      ${message ? `<p style="color:#f87171;margin-bottom:10px">${esc(message)}</p>` : ""}
+      <b>เปิดใช้งานส่วนนี้ฟรีใน 3 ขั้นตอน</b> (ใช้ TMDB API ถูกลิขสิทธิ์ ไม่มีค่าใช้จ่าย)
+      <ol>
+        <li>สมัครสมาชิกที่ <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener">themoviedb.org</a></li>
+        <li>ไปที่ <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">Settings → API</a> แล้วขอ API Key (เลือก Developer, กรอกข้อมูลคร่าว ๆ ได้เลย)</li>
+        <li>คัดลอก <b>API Key</b> (v3) หรือ <b>Read Access Token</b> (v4) มาวางด้านล่าง</li>
+      </ol>
+      <div class="key-row">
+        <input type="text" id="keyInput" placeholder="วาง TMDB API Key ที่นี่..." autocomplete="off">
+        <button id="keySave">บันทึก</button>
+      </div>
+      <p style="margin-top:10px;font-size:.83rem">key จะถูกเก็บไว้ในเบราว์เซอร์ของคุณเท่านั้น — ส่วนอื่นของเว็บใช้งานได้ตามปกติโดยไม่ต้องมี key</p>
+    </div>`;
+  document.getElementById("keySave").onclick = () => {
+    const v = document.getElementById("keyInput").value.trim();
+    if (!v) return;
+    tmdbKey = v;
+    localStorage.setItem("moviehub-tmdb-key", v);
+    loadMovies();
+  };
+}
+
+function movieCardHTML(m) {
+  const year = (m.release_date || "").slice(0, 4);
+  const poster = m.poster_path
+    ? `<img src="${TMDB_IMG}${m.poster_path}" alt="${esc(m.title)}" loading="lazy">`
+    : `<div style="aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:2rem">🎬</div>`;
+  return `
+    <div class="movie-card" data-id="${m.id}">
+      ${poster}
+      <div class="m-info">
+        <div class="m-title">${esc(m.title)}</div>
+        <div class="m-meta">
+          <span>${year || "—"}</span>
+          <span class="m-rating">★ ${(m.vote_average || 0).toFixed(1)}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+let movieList = [];
+
+async function loadMovies() {
+  if (!tmdbKey) { renderSetup(); return; }
+  movieArea.innerHTML = `<div class="movie-error">กำลังโหลดหนังยอดนิยม...</div>`;
+  try {
+    const data = await tmdbFetch("/trending/movie/week");
+    movieList = (data.results || []).slice(0, 12);
+    movieArea.innerHTML = `<div class="movie-grid">${movieList.map(movieCardHTML).join("")}</div>`;
+    keyReset.style.display = "inline";
+    movieArea.querySelectorAll(".movie-card").forEach(el => {
+      el.onclick = () => openMovie(Number(el.dataset.id));
+    });
+  } catch (e) {
+    if (String(e).includes("401")) {
+      renderSetup("API key ไม่ถูกต้อง ลองตรวจสอบแล้ววางใหม่อีกครั้ง");
+    } else {
+      movieArea.innerHTML = `<div class="movie-error">โหลดข้อมูลไม่สำเร็จ (${esc(e.message || e)}) — ลองรีเฟรชหน้าอีกครั้ง</div>`;
+      keyReset.style.display = "inline";
+    }
+  }
+}
+
+function providerLink(name, fallback) {
+  const n = name.toLowerCase();
+  for (const [k, url] of Object.entries(PROVIDER_LINKS)) {
+    if (n.includes(k)) return url;
+  }
+  return fallback;
+}
+
+async function openMovie(id) {
+  const m = movieList.find(x => x.id === id);
+  if (!m) return;
+  const year = (m.release_date || "").slice(0, 4);
+  modalBox.innerHTML = `
+    <button class="close" aria-label="ปิด">✕</button>
+    <h3>${esc(m.title)}</h3>
+    <div class="meta">${year || ""} · ★ ${(m.vote_average || 0).toFixed(1)}/10 (${m.vote_count || 0} โหวต)</div>
+    <div class="overview">${esc(m.overview) || "ไม่มีเรื่องย่อภาษาไทย"}</div>
+    <div class="watch-title">📺 ดูถูกลิขสิทธิ์ได้ที่</div>
+    <div class="providers" id="provArea">กำลังตรวจสอบ...</div>`;
+  modalBg.classList.add("open");
+  modalBox.querySelector(".close").onclick = closeModal;
+
+  try {
+    const data = await tmdbFetch(`/movie/${id}/watch/providers`);
+    const th = (data.results || {}).TH;
+    const provArea = document.getElementById("provArea");
+    if (!provArea) return;
+    if (!th) {
+      provArea.innerHTML = `<span class="none">ยังไม่มีบริการสตรีมในไทย — ลองเช็กที่ <a class="provider" href="https://www.justwatch.com/th" target="_blank" rel="noopener">JustWatch</a></span>`;
+      return;
+    }
+    const seen = new Set();
+    const provs = [...(th.flatrate || []), ...(th.free || []), ...(th.ads || []), ...(th.rent || []), ...(th.buy || [])]
+      .filter(p => !seen.has(p.provider_name) && seen.add(p.provider_name));
+    provArea.innerHTML = provs.length
+      ? provs.map(p => `<a class="provider" href="${esc(providerLink(p.provider_name, th.link))}" target="_blank" rel="noopener">${esc(p.provider_name)}</a>`).join("")
+      : `<span class="none">ยังไม่มีข้อมูลผู้ให้บริการในไทย</span>`;
+  } catch {
+    const provArea = document.getElementById("provArea");
+    if (provArea) provArea.innerHTML = `<span class="none">โหลดข้อมูลผู้ให้บริการไม่สำเร็จ</span>`;
+  }
+}
+
+function closeModal() { modalBg.classList.remove("open"); }
+modalBg.addEventListener("click", e => { if (e.target === modalBg) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+keyReset.onclick = () => {
+  localStorage.removeItem("moviehub-tmdb-key");
+  tmdbKey = "";
+  renderSetup();
+};
+
+loadMovies();
 </script>
 </body>
 </html>
