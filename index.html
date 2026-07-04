@@ -374,6 +374,12 @@
     padding: 2px 7px; border-radius: 4px; font-size: .66rem; font-weight: 800; letter-spacing: .5px;
   }
   .hd-badge.ovl-r { position: absolute; top: 8px; right: 8px; }
+  .see-all {
+    background: none; border: none; color: var(--text-dim);
+    font-size: .82rem; cursor: pointer; font-family: inherit; font-weight: 600;
+    margin-left: 8px; vertical-align: middle;
+  }
+  .see-all:hover { color: #fff; }
   .free-browse-grid {
     display: grid; gap: 12px;
     grid-template-columns: repeat(auto-fill, minmax(clamp(112px, 28vw, 160px), 1fr));
@@ -575,16 +581,6 @@
     <p class="player-note">เนื้อหาถูกลิขสิทธิ์ให้รับชมฟรี — เล่นผ่าน YouTube / Internet Archive</p>
   </div>
 </div>
-
-<div class="player-bg" id="playerBg">
-  <div class="player-box">
-    <div class="player-top">
-      <h3 id="playerTitle"></h3>
-      <button class="player-close" id="playerClose" aria-label="ปิด">✕</button>
-    </div>
-    <iframe class="player-frame" id="playerFrame" src="about:blank" allowfullscreen
-      allow="fullscreen; autoplay; encrypted-media" title="เครื่องเล่นวิดีโอ"></iframe>
-    <div class="player-note">หนังเรื่องนี้เป็นสาธารณสมบัติ (
 
 <div class="sites-modal-bg" id="sitesModalBg">
   <div class="sites-modal">
@@ -865,35 +861,127 @@ const FREE_MOVIES = [
   { src: "yt", id: "Z4C82eyhwgU", poster: "/7YtEiEzRBVCr8Sbgo1kVsr3OCMk.jpg", title: "Caminandes: Gran Dillama", year: "2013", genre: "แอนิเมชัน", hd: true },
   { src: "yt", id: "TLkA0RELQ1g", poster: "/9zROtU9TkpZQrOuEaMAp68FOWLK.jpg", title: "Elephants Dream", year: "2006", genre: "แอนิเมชัน", hd: true },
   { src: "ia", id: "Sita_Sings_the_Blues", poster: "/hrtW78FNfwFSiIetgey0cR8AT0g.jpg", title: "Sita Sings the Blues", year: "2008", genre: "แอนิเมชัน" },
-  // หนังคลาสสิกดัง (บางเรื่องเป็นสี) — Internet Archive, public domain
-  { src: "ia", id: "meet_john_doe", poster: "/dnBZbFE2OGlTGNGBVTn6t83tJtd.jpg", title: "Meet John Doe", year: "1941", genre: "ดราม่า" },
-  { src: "ia", id: "royal_wedding", poster: "/5hOyBgsmSApFl10ZfaYxUTQu5Ze.jpg", title: "Royal Wedding (สี)", year: "1951", genre: "เพลง/โรแมนติก" },
-  { src: "ia", id: "mclintok_widescreen", poster: "/gjaAtWJqGomsE5qNQStHcHhSzES.jpg", title: "McLintock! (สี)", year: "1963", genre: "ตลก/ผจญภัย" },
-  { src: "ia", id: "little_princess", poster: "/cnMSURyv7R6gjmUm5SYdTxXLzIO.jpg", title: "The Little Princess (สี)", year: "1939", genre: "ครอบครัว" },
-  { src: "ia", id: "ScarletStreet", poster: "/eGEDor1BWSQGaLtOntPHUSqNzRC.jpg", title: "Scarlet Street", year: "1945", genre: "ฟิล์มนัวร์" },
-  { src: "ia", id: "TheStranger_0", poster: "/bzjoPScBLUWpSu10m3GbSbSwVhS.jpg", title: "The Stranger", year: "1946", genre: "ระทึกขวัญ" },
-  { src: "ia", id: "suddenly", poster: "/v0eQfRMVJtvEkaJjBsSrd6ri1UI.jpg", title: "Suddenly", year: "1954", genre: "ระทึกขวัญ" },
-  { src: "ia", id: "his_girl_friday", poster: "/lu86Y9zTPH3neCiUzLzHCEFHf7f.jpg", title: "His Girl Friday", year: "1940", genre: "ตลก" },
-  { src: "ia", id: "my_favorite_brunette", poster: "/tTI4QFLQirmIw6YLR5kRAKyDKvv.jpg", title: "My Favorite Brunette", year: "1947", genre: "ตลก/ลึกลับ" },
-  { src: "ia", id: "AfricaScreams", poster: "/kwG0Zvu99fFerIJv0qnqHXZ5MWt.jpg", title: "Africa Screams", year: "1949", genre: "ตลก/ผจญภัย" },
-  { src: "ia", id: "TheFlyingDeuces", poster: "/wXXA3s9tzRV7tgiFqhm7Nvu9W8B.jpg", title: "The Flying Deuces", year: "1939", genre: "ตลก" },
-  { src: "ia", id: "penny_serenade", poster: "/7MC1fE5FSEIP9xf0N2VD68zRKv2.jpg", title: "Penny Serenade", year: "1941", genre: "โรแมนติก/ดราม่า" },
-  { src: "ia", id: "Cyrano_DeBergerac", poster: "/l4JFOXslwb90opz8xozfIhPke8z.jpg", title: "Cyrano de Bergerac", year: "1950", genre: "ดราม่า/โรแมนติก" },
-  { src: "ia", id: "secret_weapon", poster: "/50qLIyhdWrDxcZE0bmHhUaxb2FP.jpg", title: "Sherlock Holmes: Secret Weapon", year: "1943", genre: "ลึกลับ/ระทึกขวัญ" },
-  { src: "ia", id: "JungleBook", poster: "/zYkffyYCFO1Li1f20MyaAYUaYC4.jpg", title: "Jungle Book (สี)", year: "1942", genre: "ผจญภัย" },
-  { src: "ia", id: "mr_robinson_crusoe", poster: "/v9o0gtCiEfJaFjzbyDEnusezzES.jpg", title: "Mr. Robinson Crusoe", year: "1932", genre: "ผจญภัย" },
-  { src: "ia", id: "CaptainKidd_", poster: "/o6Ag6fl5wRX1lwVXq5fP6lHYpsN.jpg", title: "Captain Kidd", year: "1945", genre: "ผจญภัย" },
-  { src: "ia", id: "CarnivalofSouls", poster: "/AdbQsFB8pS090l0NO3uBtLZy2zw.jpg", title: "Carnival of Souls", year: "1962", genre: "สยองขวัญ" },
-  { src: "ia", id: "house_on_haunted_hill_ipod", poster: "/g5kdFt3piV3w1pG65W9sSToJ7HB.jpg", title: "House on Haunted Hill", year: "1959", genre: "สยองขวัญ" },
-  { src: "ia", id: "ThePhantomoftheOpera", poster: "/mvaYpAYj957C2tlq3vVJPSzGJXK.jpg", title: "The Phantom of the Opera", year: "1925", genre: "สยองขวัญ" },
-  { src: "ia", id: "DasKabinettdesDoktorCaligariTheCabinetofDrCaligari", poster: "/myK9DeIsXWGKgUTZyGXg2IfFk0W.jpg", title: "The Cabinet of Dr. Caligari", year: "1919", genre: "สยองขวัญ" },
-  { src: "ia", id: "Inner_Sanctum_movie", poster: "/iPIOExn7a2YlyLyC1n48gZUs98R.jpg", title: "Inner Sanctum", year: "1948", genre: "ลึกลับ" },
-  { src: "ia", id: "impact", poster: "/tNF03oWEefF5dImf0uOt1QgYdew.jpg", title: "Impact", year: "1949", genre: "ฟิล์มนัวร์" },
-  { src: "ia", id: "Detour", poster: "/gJb9HRAs1V4bA0VKsWpT6mhv2RT.jpg", title: "Detour", year: "1945", genre: "ฟิล์มนัวร์" },
-  { src: "ia", id: "20000LeaguesUndertheSea", poster: "/edY5eDCC08OUKjS0k7zWUxYM9BB.jpg", title: "20,000 Leagues Under the Sea", year: "1916", genre: "ผจญภัย/ไซไฟ" },
-  { src: "ia", id: "lost_world", poster: "/411VnWtYJdEFKiaGqJOeTmBv8th.jpg", title: "The Lost World", year: "1925", genre: "ผจญภัย" },
-  { src: "ia", id: "gullivers_travels1939", poster: "/fiwAJIAnSqWbU3JphqN8Y80mFM6.jpg", title: "Gulliver's Travels", year: "1939", genre: "แอนิเมชัน" },
-  { src: "ia", id: "charlie_chaplin_film_fest", poster: "/kZqVmoHksjX1FANINggnaoCmwIn.jpg", title: "Charlie Chaplin Festival", year: "1938", genre: "ตลก" },
+  // หนังคลาสสิก public domain จาก Internet Archive (ตรวจสอบและจับคู่โปสเตอร์อัตโนมัติ)
+  { src: "ia", id: "Night.Of.The.Living.Dead_1080p", title: "Night of the Living Dead", year: "1968", genre: "สยองขวัญ/ระทึกขวัญ", poster: "/rb2NWyb008u1EcKCOyXs2Nmj0ra.jpg" },
+  { src: "ia", id: "Nosferatu_most_complete_version_93_mins.", title: "Nosferatu", year: "1922", genre: "สยองขวัญ/แฟนตาซี", poster: "/zv7J85D8CC9qYagAEhPM63CIG6j.jpg" },
+  { src: "ia", id: "DasKabinettdesDoktorCaligariTheCabinetofDrCaligari", title: "The Cabinet of Dr. Caligari", year: "1920", genre: "ดราม่า/สยองขวัญ", poster: "/myK9DeIsXWGKgUTZyGXg2IfFk0W.jpg" },
+  { src: "ia", id: "The_General_Buster_Keaton", title: "The General", year: "1926", genre: "แอ็คชั่น/ผจญภัย", poster: "/3jfkdJTw5b6uVrp1rdrV4FHEvGg.jpg" },
+  { src: "ia", id: "BattleshipPotemkin", title: "Battleship Potemkin", year: "1925", genre: "ดราม่า/ประวัติศาสตร์", poster: "/hZmsRLsCnE9Zshf1YJONUpCOhds.jpg" },
+  { src: "ia", id: "the-invisible-man-1933_202105", title: "The Invisible Man", year: "1933", genre: "สยองขวัญ/ไซไฟ", poster: "/ewfUA5pMEJrmQCdI4TsHmLlIUbf.jpg" },
+  { src: "ia", id: "his_girl_friday", title: "His Girl Friday", year: "1940", genre: "ตลก/โรแมนติก", poster: "/lu86Y9zTPH3neCiUzLzHCEFHf7f.jpg" },
+  { src: "ia", id: "ChelovekskinoapparatomManWithAMovieCamera", title: "Man with a Movie Camera", year: "1929", genre: "สารคดี", poster: "/vJgAdgJWX54v0oXfIvhwjlZnmgn.jpg" },
+  { src: "ia", id: "TheStranger_0", title: "The Stranger", year: "1946", genre: "ระทึกขวัญ/อาชญากรรม", poster: "/bzjoPScBLUWpSu10m3GbSbSwVhS.jpg" },
+  { src: "ia", id: "house_on_haunted_hill_ipod", title: "House on Haunted Hill", year: "1959", genre: "สยองขวัญ/ลึกลับ", poster: "/g5kdFt3piV3w1pG65W9sSToJ7HB.jpg" },
+  { src: "ia", id: "CarnivalofSouls", title: "Carnival of Souls", year: "1962", genre: "สยองขวัญ/ลึกลับ", poster: "/AdbQsFB8pS090l0NO3uBtLZy2zw.jpg" },
+  { src: "ia", id: "The_Little_Shop_of_Horrors.mpeg", title: "The Little Shop of Horrors", year: "1960", genre: "สยองขวัญ/ตลก", poster: "/s9MrumN9oCfv1rFoEvMLwucWD7V.jpg" },
+  { src: "ia", id: "ScarletStreet", title: "Scarlet Street", year: "1945", genre: "ดราม่า/อาชญากรรม", poster: "/eGEDor1BWSQGaLtOntPHUSqNzRC.jpg" },
+  { src: "ia", id: "Haxan_tinted_and_subtitled", title: "Häxan", year: "1922", genre: "สารคดี/สยองขวัญ", poster: "/3LtaPLlwlA5HX2FjqAb8lsaBI8P.jpg" },
+  { src: "ia", id: "Detour", title: "Detour", year: "1945", genre: "ดราม่า/ระทึกขวัญ", poster: "/gJb9HRAs1V4bA0VKsWpT6mhv2RT.jpg" },
+  { src: "ia", id: "ThePhantomoftheOpera", title: "The Phantom of the Opera", year: "1925", genre: "สยองขวัญ", poster: "/mvaYpAYj957C2tlq3vVJPSzGJXK.jpg" },
+  { src: "ia", id: "Intolerance", title: "Intolerance: Love's Struggle Throughout the Ages", year: "1916", genre: "ดราม่า/ประวัติศาสตร์", poster: "/lJCabs4TMOsKfnl0BmA5Hf16Ezb.jpg" },
+  { src: "ia", id: "OneWeek", title: "One Week", year: "1920", genre: "ตลก", poster: "/43KTefZOLOaXw4Rbywn3uu8BiJn.jpg" },
+  { src: "ia", id: "CC_1917_06_17_TheImmigrant", title: "The Immigrant", year: "1917", genre: "ตลก/โรแมนติก", poster: "/f4xP9DvXKqpYKo0Fth5tKyZY8ej.jpg" },
+  { src: "ia", id: "TheMostDangerousGame", title: "The Most Dangerous Game", year: "1932", genre: "ระทึกขวัญ/ผจญภัย", poster: "/3aNlOIFlGOnIzxqvAWpgm5Sly1H.jpg" },
+  { src: "ia", id: "meet_john_doe", title: "Meet John Doe", year: "1941", genre: "ดราม่า/ตลก", poster: "/dnBZbFE2OGlTGNGBVTn6t83tJtd.jpg" },
+  { src: "ia", id: "white_zombie", title: "White Zombie", year: "1932", genre: "สยองขวัญ", poster: "/s5DnfWHGeCExlweIFF4JOHKyx3H.jpg" },
+  { src: "ia", id: "mclintok_widescreen", title: "McLintock!", year: "1963", genre: "คาวบอย/ตลก", poster: "/gjaAtWJqGomsE5qNQStHcHhSzES.jpg" },
+  { src: "ia", id: "TheGolem_893", title: "The Golem: How He Came into the World", year: "1920", genre: "แฟนตาซี/สยองขวัญ", poster: "/7zdqM0MgZBfy3tuJdNO4cWAGBtj.jpg" },
+  { src: "ia", id: "FrankensteinfullMovie", title: "Frankenstein", year: "1910", genre: "สยองขวัญ/ไซไฟ", poster: "/xPzF7qW6FFZEzfsnsKqNOncxJNU.jpg" },
+  { src: "ia", id: "Cops", title: "Cops", year: "1922", genre: "ตลก/ครอบครัว", poster: "/uN8b6oQlmsb81G7GepgjPyRDLaO.jpg" },
+  { src: "ia", id: "The_Haunted_Castle_1896", title: "Le manoir du diable", year: "1896", genre: "แฟนตาซี/สยองขวัญ", poster: "/n9uPKpQGlKrVRDe0NqDAhSzPSmB.jpg" },
+  { src: "ia", id: "Hitch_Hiker", title: "The Hitch-Hiker", year: "1953", genre: "ระทึกขวัญ/อาชญากรรม", poster: "/9ORvQWC2o0FwIEl6zYU1jw9qH0X.jpg" },
+  { src: "ia", id: "Martha_Ivers_movie", title: "The Strange Love of Martha Ivers", year: "1946", genre: "ดราม่า/ระทึกขวัญ", poster: "/iUAq0UYHglCsnHVbBLcJvZ6KQN9.jpg" },
+  { src: "ia", id: "ThiefOfBagdad1924", title: "The Thief of Bagdad", year: "1924", genre: "โรแมนติก/ผจญภัย", poster: "/8t4CJ591N2FATf2yUiQNQk9p0tB.jpg" },
+  { src: "ia", id: "TheTerror", title: "The Terror", year: "1963", genre: "สยองขวัญ/ลึกลับ", poster: "/7ls64LquXB0nc5MkJFWyWaXlBLj.jpg" },
+  { src: "ia", id: "TheFlyingDeuces", title: "The Flying Deuces", year: "1939", genre: "ตลก/สงคราม", poster: "/wXXA3s9tzRV7tgiFqhm7Nvu9W8B.jpg" },
+  { src: "ia", id: "Horror_Hotel", title: "The City of the Dead", year: "1960", genre: "ลึกลับ/สยองขวัญ", poster: "/xdM3QYjzzjuMy0cqlDNfet1BQhL.jpg" },
+  { src: "ia", id: "TheGoat", title: "The Goat", year: "1921", genre: "ตลก", poster: "/wwyhlEIHW79y2NqNQ79Xc6LHRVZ.jpg" },
+  { src: "ia", id: "lost_world", title: "The Lost World", year: "1925", genre: "ผจญภัย/แฟนตาซี", poster: "/411VnWtYJdEFKiaGqJOeTmBv8th.jpg" },
+  { src: "ia", id: "BusterKeatonthescarecrow", title: "The Scarecrow", year: "1920", genre: "ตลก", poster: "/uTrS56W99XsdeJTboae2Sozt3O1.jpg" },
+  { src: "ia", id: "farewell_to_arms_ipod", title: "A Farewell to Arms", year: "1932", genre: "ดราม่า/โรแมนติก", poster: "/eNmPByGZJqlp60nCZRhsAlVAb3F.jpg" },
+  { src: "ia", id: "Neighbors", title: "Neighbors", year: "1920", genre: "ตลก/โรแมนติก", poster: "/k1UjHdeHAIS3vlgmdiwP5ITKVu5.jpg" },
+  { src: "ia", id: "CC_1917_10_22_TheAdventurer", title: "The Adventurer", year: "1917", genre: "ตลก/ผจญภัย", poster: "/khSBh0dDnPsWel6P2zyZCQ2UnMp.jpg" },
+  { src: "ia", id: "gullivers_travels1939", title: "Gulliver's Travels", year: "1939", genre: "แอนิเมชัน/ครอบครัว", poster: "/fiwAJIAnSqWbU3JphqN8Y80mFM6.jpg" },
+  { src: "ia", id: "CC_1916_12_04_TheRink", title: "The Rink", year: "1916", genre: "ตลก", poster: "/oaKKcsUChu117urmWBz9Os23Ad9.jpg" },
+  { src: "ia", id: "secret_weapon", title: "Sherlock Holmes and the Secret Weapon", year: "1942", genre: "ลึกลับ/ระทึกขวัญ", poster: "/50qLIyhdWrDxcZE0bmHhUaxb2FP.jpg" },
+  { src: "ia", id: "ThePlayhouse", title: "The Play House", year: "1921", genre: "ตลก/แฟนตาซี", poster: "/txGAT0nx3k1Za8JSBErqdD5T78T.jpg" },
+  { src: "ia", id: "Silent_ThreeAges_1923", title: "Three Ages", year: "1923", genre: "ตลก", poster: "/khadgoKp9eLBY4t0KcST5gzddk3.jpg" },
+  { src: "ia", id: "TheBrainThatWouldntDie_165", title: "The Brain That Wouldn't Die", year: "1962", genre: "สยองขวัญ/ไซไฟ", poster: "/npg6NH4maZ4NTTWzA71KNCTvQNG.jpg" },
+  { src: "ia", id: "dressed_to_kill", title: "Dressed to Kill", year: "1946", genre: "ลึกลับ/อาชญากรรม", poster: "/oD4z3ON2ciLMv6obEH2K8tGThWG.jpg" },
+  { src: "ia", id: "The_Bat_Vincent_Price", title: "The Bat", year: "1959", genre: "สยองขวัญ/ลึกลับ", poster: "/78PVHYnadZ0e2BkBBSNonMZvViB.jpg" },
+  { src: "ia", id: "The_Hunchback_of_Notre_Dame", title: "The Hunchback of Notre Dame", year: "1923", genre: "โรแมนติก/ดราม่า", poster: "/3oheTQrTuqS1jPUW6GOc65ZbM5u.jpg" },
+  { src: "ia", id: "CC_1916_08_07_One_A_M", title: "One A.M.", year: "1916", genre: "ตลก", poster: "/6JYWlLf3YNiBUf4QII3V4pLhWIG.jpg" },
+  { src: "ia", id: "college", title: "College", year: "1927", genre: "ดราม่า/ตลก", poster: "/dUwk8qNkXb243JViqdVqOvUmiMt.jpg" },
+  { src: "ia", id: "little_princess", title: "The Little Princess", year: "1939", genre: "ครอบครัว/ดราม่า", poster: "/cnMSURyv7R6gjmUm5SYdTxXLzIO.jpg" },
+  { src: "ia", id: "penny_serenade", title: "Penny Serenade", year: "1941", genre: "ดราม่า/โรแมนติก", poster: "/7MC1fE5FSEIP9xf0N2VD68zRKv2.jpg" },
+  { src: "ia", id: "suddenly", title: "Suddenly", year: "1954", genre: "อาชญากรรม/ระทึกขวัญ", poster: "/v0eQfRMVJtvEkaJjBsSrd6ri1UI.jpg" },
+  { src: "ia", id: "CC_1916_10_02_ThePawnshop", title: "The Pawnshop", year: "1916", genre: "ตลก", poster: "/gBKc0hxfrlLr2YQLnq16fzadusM.jpg" },
+  { src: "ia", id: "CC_1916_05_15_TheFloorwalker", title: "The Floorwalker", year: "1916", genre: "ตลก", poster: "/s8sb9XlE0U3Ox8KIX2iGbTMKk5S.jpg" },
+  { src: "ia", id: "JungleBook", title: "Jungle Book", year: "1942", genre: "ผจญภัย/แฟนตาซี", poster: "/zYkffyYCFO1Li1f20MyaAYUaYC4.jpg" },
+  { src: "ia", id: "TheChampion", title: "The Champion", year: "1915", genre: "ตลก", poster: "/jRLpmw9VfbdHVT1NAAFKESVok3P.jpg" },
+  { src: "ia", id: "royal_wedding", title: "Royal Wedding", year: "1951", genre: "เพลง/ตลก", poster: "/5hOyBgsmSApFl10ZfaYxUTQu5Ze.jpg" },
+  { src: "ia", id: "TheElectricHouse", title: "The Electric House", year: "1922", genre: "ตลก", poster: "/kWD82Oq8FLH5VGpIpS2c3lwAwIP.jpg" },
+  { src: "ia", id: "CC_1914_02_02_MakingALiving", title: "Making a Living", year: "1914", genre: "ตลก", poster: "/lNhgTadTVm7oR6YL20nr7fcrvT6.jpg" },
+  { src: "ia", id: "NightTide1961_4", title: "Night Tide", year: "1961", genre: "ระทึกขวัญ/ลึกลับ", poster: "/bd8pTcZQNRBFrShJoCQUWnJxmZJ.jpg" },
+  { src: "ia", id: "Kilimanjaro", title: "The Snows of Kilimanjaro", year: "1952", genre: "ผจญภัย/โรแมนติก", poster: "/xIdEt2rycY6h3QAKGqWrIGqhviD.jpg" },
+  { src: "ia", id: "CC_1916_11_13_BehindtheScreen", title: "Behind the Screen", year: "1916", genre: "ตลก/โรแมนติก", poster: "/u1AYvWE0JYjGjg7XCNAevkJZrMR.jpg" },
+  { src: "ia", id: "The_Killer_Shrews", title: "The Killer Shrews", year: "1959", genre: "สยองขวัญ/ไซไฟ", poster: "/2agTmqPg2we1gd4Fr1p2UNAMORI.jpg" },
+  { src: "ia", id: "CC_1914_02_09_MabelsStrangePredicament", title: "Mabel's Strange Predicament", year: "1914", genre: "ตลก", poster: "/s2nVWmaktITmMelHe4t3mlEW8LG.jpg" },
+  { src: "ia", id: "ANightintheShow", title: "A Night in the Show", year: "1915", genre: "ตลก", poster: "/j9aFYk99nbwPlZ3hj1FJWMyPfoa.jpg" },
+  { src: "ia", id: "CC_1916_09_04_TheCount", title: "The Count", year: "1916", genre: "ตลก", poster: "/trxdGbbNJrdByynYPdNrpILkCK3.jpg" },
+  { src: "ia", id: "daughter_of_horror", title: "Dementia", year: "1955", genre: "สยองขวัญ/ดราม่า", poster: "/u0dai8tk4urRAox8rZTEXixURUw.jpg" },
+  { src: "ia", id: "CC_1916_05_27_Police", title: "Police", year: "1916", genre: "ตลก", poster: "/Ao9V2glJ1BtLUy6RPTRxj4fxJIK.jpg" },
+  { src: "ia", id: "nightmare_castle", title: "Nightmare Castle", year: "1965", genre: "สยองขวัญ", poster: "/rP53nQzUYJ04ur6Mb7XSaahW1vN.jpg" },
+  { src: "ia", id: "CC_1915_02_01_HisNewJob", title: "His New Job", year: "1915", genre: "ตลก", poster: "/9Fjr5R6UymVNmd7GwImfzcw5Wbe.jpg" },
+  { src: "ia", id: "Cyrano_DeBergerac", title: "Cyrano de Bergerac", year: "1950", genre: "โรแมนติก/ดราม่า", poster: "/l4JFOXslwb90opz8xozfIhPke8z.jpg" },
+  { src: "ia", id: "BloodyPitOfHorror", title: "Bloody Pit of Horror", year: "1965", genre: "สยองขวัญ", poster: "/xCBV9KEvgGx5CseJAaPt0r7zX9c.jpg" },
+  { src: "ia", id: "markofzorro-1920", title: "The Mark of Zorro", year: "1920", genre: "คาวบอย/ผจญภัย", poster: "/1N1gSSJs9ULgSWUM0W7zCXSR2QK.jpg" },
+  { src: "ia", id: "CC_1914_08_27_TheMasquerader", title: "The Masquerader", year: "1914", genre: "ตลก", poster: "/vtShGTcmFDRGX8e2bwakKLSeaKp.jpg" },
+  { src: "ia", id: "utopia", title: "Robinson Crusoeland", year: "1951", genre: "ตลก", poster: "/86XVqC144ERq5AVxmSmYhF9bmRw.jpg" },
+  { src: "ia", id: "CC_1914_02_28_BetweenShowers", title: "Between Showers", year: "1914", genre: "ตลก", poster: "/5fSaxjRtz5NKouSfM1XEcnRfiwe.jpg" },
+  { src: "ia", id: "Eegah", title: "Eegah", year: "1962", genre: "สยองขวัญ/ไซไฟ", poster: "/mvLmdKwnzVjPNdRs5FYBgL3xQWB.jpg" },
+  { src: "ia", id: "impact", title: "Impact", year: "1949", genre: "ระทึกขวัญ/ดราม่า", poster: "/tNF03oWEefF5dImf0uOt1QgYdew.jpg" },
+  { src: "ia", id: "AfricaScreams", title: "Africa Screams", year: "1949", genre: "ตลก/ผจญภัย", poster: "/kwG0Zvu99fFerIJv0qnqHXZ5MWt.jpg" },
+  { src: "ia", id: "SvengaliJohnBarrymoreBKCap1931", title: "Svengali", year: "1931", genre: "ดราม่า/สยองขวัญ", poster: "/jLE87vAc9bqytSZAfU76MmnQdMh.jpg" },
+  { src: "ia", id: "CC_1914_04_20_TwentyMinutesofLove", title: "Twenty Minutes of Love", year: "1914", genre: "ตลก", poster: "/9uFAhOZ2SzzyFNdKMIndns9h0KX.jpg" },
+  { src: "ia", id: "TheGhoul", title: "The Ghoul", year: "1933", genre: "สยองขวัญ/ลึกลับ", poster: "/dmMBlNiGLQJRVNGgy8SRnscidUn.jpg" },
+  { src: "ia", id: "CC_1915_10_04_CharlieShanghaied", title: "Shanghaied", year: "1915", genre: "ตลก", poster: "/juwx4pw6gyloHyxAEUagCF3vkB6.jpg" },
+  { src: "ia", id: "20000LeaguesUndertheSea", title: "20,000 Leagues Under the Sea", year: "1916", genre: "ผจญภัย/ดราม่า", poster: "/edY5eDCC08OUKjS0k7zWUxYM9BB.jpg" },
+  { src: "ia", id: "Santa_Fe_Trail_movie", title: "Santa Fe Trail", year: "1940", genre: "คาวบอย", poster: "/uBtJzonmF9uOFrDXlqQuxTfMwl7.jpg" },
+  { src: "ia", id: "TheScreamingSkull", title: "The Screaming Skull", year: "1958", genre: "ระทึกขวัญ/สยองขวัญ", poster: "/dvobVaHdaPn0y7KNZT6Nfmgohr0.jpg" },
+  { src: "ia", id: "teenagers_from_outerspace", title: "Teenagers from Outer Space", year: "1959", genre: "อาชญากรรม/สยองขวัญ", poster: "/lb8hW24LHSllzlHSOjCwOx2o07D.jpg" },
+  { src: "ia", id: "CC_1914_08_31_TheGoodforNothing", title: "His New Profession", year: "1914", genre: "ตลก", poster: "/qqSU0nf3xztvGIZKWjWa3nTr7Y9.jpg" },
+  { src: "ia", id: "my_favorite_brunette", title: "My Favorite Brunette", year: "1947", genre: "ตลก/ลึกลับ", poster: "/tTI4QFLQirmIw6YLR5kRAKyDKvv.jpg" },
+  { src: "ia", id: "CC_1914_08_13_CharliesRecreation", title: "Tango Tangles", year: "1914", genre: "ตลก", poster: "/aOeFttWSuEuafCdfXfiMSEK0JI5.jpg" },
+  { src: "ia", id: "Maniac", title: "Maniac", year: "1934", genre: "สยองขวัญ", poster: "/akRVscTstKGKk8ebb0UGDdJ6q3z.jpg" },
+  { src: "ia", id: "The_Four_Horsemen_of_the_Apocalypse", title: "The Four Horsemen of the Apocalypse", year: "1921", genre: "สงคราม/โรแมนติก", poster: "/262nYFe45BxX22M9TPhB4BwEqby.jpg" },
+  { src: "ia", id: "CC_1914_03_26_CruelCruelLove", title: "Cruel, Cruel Love", year: "1914", genre: "ตลก", poster: "/tvBAvzwfVBz0kEeOz57p22YpdUX.jpg" },
+  { src: "ia", id: "Killers_from_space", title: "Killers from Space", year: "1954", genre: "สยองขวัญ/ไซไฟ", poster: "/ajQgkwtcVvjqBcDq31qwbn8svyT.jpg" },
+  { src: "ia", id: "AtWarWithTheArmy", title: "At War with the Army", year: "1950", genre: "ตลก/สงคราม", poster: "/viLzurxFrHbosBtTGf0gkPKa9qx.jpg" },
+  { src: "ia", id: "cco_jackandthebeanstalk", title: "Jack and the Beanstalk", year: "1952", genre: "ตลก/แฟนตาซี", poster: "/psogkzcA2yOT0Tz669i0Lm1eZXM.jpg" },
+  { src: "ia", id: "FairbanksRobinHood1922", title: "Robin Hood", year: "1922", genre: "ผจญภัย/โรแมนติก", poster: "/baqMnZbAFPsfbaAOPRU1eJlCRdj.jpg" },
+  { src: "ia", id: "Sinking_of_the_Lusitania", title: "The Sinking of the Lusitania", year: "1918", genre: "สงคราม/แอนิเมชัน", poster: "/5qIiuAGd5hj0i4uZk4UvzYWwQtH.jpg" },
+  { src: "ia", id: "VoyagetothePlanetofPrehistoricWomen", title: "Voyage to the Planet of Prehistoric Women", year: "1968", genre: "ผจญภัย/ไซไฟ", poster: "/aTZHuHghiEpB3WYM93V1FtYyJ4B.jpg" },
+  { src: "ia", id: "King_of_the_Zombies", title: "King of the Zombies", year: "1941", genre: "สยองขวัญ/ตลก", poster: "/8aR8TjqGCHqBWlntgPK2N7nFnNC.jpg" },
+  { src: "ia", id: "CreatureFromTheHauntedSea", title: "Creature from the Haunted Sea", year: "1961", genre: "สยองขวัญ/ตลก", poster: "/9fZwh9aYHPw5pOT199R3yprJBgb.jpg" },
+  { src: "ia", id: "The_Sadist", title: "The Sadist", year: "1963", genre: "สยองขวัญ/ระทึกขวัญ", poster: "/3m1pUOGi568pXGNO3pQYi9ko8JR.jpg" },
+  { src: "ia", id: "CC_1914_06_11_TheKnockout", title: "The Knockout", year: "1914", genre: "ตลก", poster: "/8qmp5csuIU3w3hpTgr4N9SwDWqu.jpg" },
+  { src: "ia", id: "Scrooge_1935", title: "Scrooge", year: "1935", genre: "ดราม่า/แฟนตาซี", poster: "/vqRuJyux0KEr4vojK9ytXIrEU46.jpg" },
+  { src: "ia", id: "JailBait", title: "Jail Bait", year: "1954", genre: "อาชญากรรม/ระทึกขวัญ", poster: "/av2ppBDn3Z9BSBByao9WEv8XWXA.jpg" },
+  { src: "ia", id: "Bluebeard", title: "Bluebeard", year: "1944", genre: "อาชญากรรม/ระทึกขวัญ", poster: "/6S0waXu4haFamrSxRPKHQje0FKH.jpg" },
+  { src: "ia", id: "sweeney.todd", title: "Sweeney Todd: The Demon Barber of Fleet Street", year: "1936", genre: "ดราม่า/อาชญากรรม", poster: "/4EmPHyueexsshJC7nFcQgi6nGGq.jpg" },
+  { src: "ia", id: "Werewolf_In_A_Girls_Dormitory", title: "Werewolf in a Girls' Dormitory", year: "1961", genre: "สยองขวัญ/ลึกลับ", poster: "/tmwehN09D2RUTEvxQuveRaeH0gN.jpg" },
+  { src: "ia", id: "TheSheBeast", title: "The She Beast", year: "1966", genre: "ระทึกขวัญ/สยองขวัญ", poster: "/qSPryYmCWvVxaiMt6FioVAHdyGS.jpg" },
+  { src: "ia", id: "Never_Weaken_1921", title: "Never Weaken", year: "1921", genre: "ตลก", poster: "/ro8eWzMVPvJv93i7VSkugYsIxWC.jpg" },
+  { src: "ia", id: "angelOnMyShoulder", title: "Angel on My Shoulder", year: "1946", genre: "ตลก/แฟนตาซี", poster: "/tIDUVxp1yeq1Bw4KsdAaoEJtSsI.jpg" },
+  { src: "ia", id: "LadyWindermeresFan", title: "Lady Windermere's Fan", year: "1925", genre: "ตลก/ดราม่า", poster: "/fpDPAhrWuLiF28KMwDhYAj5ofTk.jpg" },
+  { src: "ia", id: "disorder_in_the_court", title: "Disorder in the Court", year: "1936", genre: "ตลก", poster: "/l801pSeHhCPsimBxzvKaVIWvdsi.jpg" },
+  { src: "ia", id: "last_of_the_mohicans_1920", title: "The Last of the Mohicans", year: "1920", genre: "ผจญภัย/ดราม่า", poster: "/kNpjv5byJM8H83JJwPLMDyB095t.jpg" },
+  { src: "ia", id: "OnlytheValaint", title: "Only the Valiant", year: "1951", genre: "คาวบอย", poster: "/7j2DB5PBuyxXMDKM8t5sia87wht.jpg" },
+  { src: "ia", id: "TheIncrediblePetrifiedWorld", title: "The Incredible Petrified World", year: "1959", genre: "ผจญภัย/ไซไฟ", poster: "/qns5oUzhUTGcPyeNyaM3DwBrwdC.jpg" },
+  { src: "ia", id: "Quicksand_clear", title: "Quicksand", year: "1950", genre: "อาชญากรรม/ระทึกขวัญ", poster: "/rTtFvxrHpLECgLE86zStkHYxTyx.jpg" },
+  { src: "ia", id: "They_Made_Me_A_Criminal_1939", title: "They Made Me a Criminal", year: "1939", genre: "อาชญากรรม/ดราม่า", poster: "/aNiWJ2C8Amrun55JCvuvGEPIXli.jpg" },
+  { src: "ia", id: "AliceInWonderland1915_503", title: "Alice in Wonderland", year: "1915", genre: "ครอบครัว/แฟนตาซี", poster: "/6R12mA8mHhjcpo7V9OkMBU4Mnqd.jpg" },
 ];
 
 function freeThumb(f) {
@@ -925,8 +1013,8 @@ function freeCardHTML(f, i) {
 }
 
 function freeRowHTML() {
-  return `<div class="row-title" id="freeRow">🎬 ดูฟรีในเว็บเรา (ถูกลิขสิทธิ์)</div>
-    <div class="movie-grid">${FREE_MOVIES.map((f, i) => freeCardHTML(f, i)).join("")}</div>`;
+  return `<div class="row-title" id="freeRow">🎬 ดูฟรีในเว็บเรา (${FREE_MOVIES.length} เรื่อง) <button class="see-all" data-seeall>ดูทั้งหมด ›</button></div>
+    <div class="movie-grid">${FREE_MOVIES.slice(0, 20).map((f, i) => freeCardHTML(f, i)).join("")}</div>`;
 }
 
 function movieCardHTML(m, type) {
@@ -990,6 +1078,9 @@ function attachCardHandlers() {
   });
   movieArea.querySelectorAll(".free-card").forEach(el => {
     el.onclick = () => openPlayer(FREE_MOVIES[Number(el.dataset.fi)]);
+  });
+  movieArea.querySelectorAll("[data-seeall]").forEach(el => {
+    el.onclick = () => selectGenre("free");
   });
 }
 
