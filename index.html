@@ -331,46 +331,56 @@
   /* ===== ดูฟรีในเว็บเรา ===== */
   .free-card {
     cursor: pointer; border-radius: var(--radius); overflow: hidden;
-    background: var(--card); position: relative;
-    flex: 0 0 auto; width: clamp(210px, 56vw, 300px);
+    background: var(--card);
+    flex: 0 0 auto; width: clamp(128px, 30vw, 168px);
     scroll-snap-align: start;
     transition: transform .2s ease;
   }
-  .free-card:hover { transform: scale(1.05); z-index: 5; box-shadow: 0 8px 26px rgba(0,0,0,.6); }
+  .free-card:hover { transform: scale(1.07); z-index: 5; box-shadow: 0 8px 26px rgba(0,0,0,.6); }
+  .free-card .poster-wrap { position: relative; }
   .free-card .thumb {
-    width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;
+    width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block;
     background: linear-gradient(135deg, #2a2a2a, #161616);
     color: transparent; font-size: 0;
   }
   .free-card .play-ovl {
-    position: absolute; top: 0; left: 0; right: 0; aspect-ratio: 16/9;
+    position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(0,0,0,.25); opacity: 0; transition: opacity .2s;
+    background: rgba(0,0,0,.3); opacity: 0; transition: opacity .2s;
   }
   .free-card:hover .play-ovl { opacity: 1; }
   .free-card .play-ovl span {
-    width: 52px; height: 52px; border-radius: 50%;
+    width: 50px; height: 50px; border-radius: 50%;
     background: rgba(255,255,255,.92); color: #000;
-    display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+    display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
     padding-left: 4px;
   }
-  .free-card .f-info { padding: 9px 11px 11px; }
-  .free-card .f-title { font-size: .88rem; font-weight: 600; line-height: 1.35; }
-  .free-card .f-meta { color: var(--text-dim); font-size: .75rem; margin-top: 3px; display: flex; gap: 8px; align-items: center; }
+  .free-card .f-info { padding: 8px 9px 10px; }
+  .free-card .f-title {
+    font-size: .82rem; font-weight: 600; line-height: 1.35;
+    display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .free-card .f-meta {
+    color: var(--text-dim); font-size: .72rem; margin-top: 4px;
+    display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+  }
   .free-badge {
-    background: #143d26; color: #4ade80;
-    padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 700;
+    background: rgba(20,61,38,.92); color: #4ade80;
+    padding: 2px 8px; border-radius: 4px; font-size: .68rem; font-weight: 700;
   }
+  .free-badge.ovl { position: absolute; top: 8px; left: 8px; }
   .hd-badge {
-    background: #1e3a5f; color: #7dd3fc;
-    padding: 2px 7px; border-radius: 4px; font-size: .68rem; font-weight: 800; letter-spacing: .5px;
+    background: rgba(30,58,95,.92); color: #7dd3fc;
+    padding: 2px 7px; border-radius: 4px; font-size: .66rem; font-weight: 800; letter-spacing: .5px;
   }
+  .hd-badge.ovl-r { position: absolute; top: 8px; right: 8px; }
   .free-browse-grid {
-    display: grid; gap: 14px;
-    grid-template-columns: repeat(auto-fill, minmax(clamp(200px, 60vw, 280px), 1fr));
+    display: grid; gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(112px, 28vw, 160px), 1fr));
     padding: 6px clamp(20px, 5vw, 56px) 26px;
   }
   .free-browse-grid .free-card { width: auto; }
+  .free-browse-grid .free-card:hover { transform: scale(1.05); }
 
   /* player modal */
   .player-bg {
@@ -847,46 +857,47 @@ const ROWS = [
 // src: "ia" = Internet Archive (public domain), "yt" = YouTube (ช่องทางการ)
 const FREE_MOVIES = [
   // แอนิเมชัน HD/4K จาก Blender Foundation (CC-BY, ภาพคมชัด)
-  { src: "yt", id: "aqz-KE-bpKQ", title: "Big Buck Bunny (4K)", year: "2008", genre: "แอนิเมชัน", hd: true },
-  { src: "yt", id: "eRsGyueVLvQ", title: "Sintel", year: "2010", genre: "แอนิเมชัน/แฟนตาซี", hd: true },
-  { src: "yt", id: "R6MlUcmOul8", title: "Tears of Steel", year: "2012", genre: "ไซไฟ", hd: true },
-  { src: "yt", id: "WhWc3b3KhnY", title: "Spring", year: "2019", genre: "แอนิเมชัน", hd: true },
-  { src: "yt", id: "_cMxraX_5RE", title: "Sprite Fright", year: "2021", genre: "แอนิเมชัน/สยองขวัญ", hd: true },
-  { src: "yt", id: "Z4C82eyhwgU", title: "Caminandes: Gran Dillama", year: "2013", genre: "แอนิเมชัน", hd: true },
-  { src: "yt", id: "TLkA0RELQ1g", title: "Elephants Dream", year: "2006", genre: "แอนิเมชัน", hd: true },
-  { src: "ia", id: "Sita_Sings_the_Blues", title: "Sita Sings the Blues", year: "2008", genre: "แอนิเมชัน" },
+  { src: "yt", id: "aqz-KE-bpKQ", poster: "/i9jJzvoXET4D9pOkoEwncSdNNER.jpg", title: "Big Buck Bunny (4K)", year: "2008", genre: "แอนิเมชัน", hd: true },
+  { src: "yt", id: "eRsGyueVLvQ", poster: "/4BMG9hk9NvSBeQvC82sVmVRK140.jpg", title: "Sintel", year: "2010", genre: "แอนิเมชัน/แฟนตาซี", hd: true },
+  { src: "yt", id: "R6MlUcmOul8", poster: "/8qy3jRmaHR7f8VZh3iXCqCWfFsH.jpg", title: "Tears of Steel", year: "2012", genre: "ไซไฟ", hd: true },
+  { src: "yt", id: "WhWc3b3KhnY", poster: "/9tyPnyEkL44qbAliM9jMRWc6bjg.jpg", title: "Spring", year: "2019", genre: "แอนิเมชัน", hd: true },
+  { src: "yt", id: "_cMxraX_5RE", poster: "/AjWJQOogG4Irpff6K49tzrUTb1s.jpg", title: "Sprite Fright", year: "2021", genre: "แอนิเมชัน/สยองขวัญ", hd: true },
+  { src: "yt", id: "Z4C82eyhwgU", poster: "/7YtEiEzRBVCr8Sbgo1kVsr3OCMk.jpg", title: "Caminandes: Gran Dillama", year: "2013", genre: "แอนิเมชัน", hd: true },
+  { src: "yt", id: "TLkA0RELQ1g", poster: "/9zROtU9TkpZQrOuEaMAp68FOWLK.jpg", title: "Elephants Dream", year: "2006", genre: "แอนิเมชัน", hd: true },
+  { src: "ia", id: "Sita_Sings_the_Blues", poster: "/hrtW78FNfwFSiIetgey0cR8AT0g.jpg", title: "Sita Sings the Blues", year: "2008", genre: "แอนิเมชัน" },
   // หนังคลาสสิกดัง (บางเรื่องเป็นสี) — Internet Archive, public domain
-  { src: "ia", id: "meet_john_doe", title: "Meet John Doe", year: "1941", genre: "ดราม่า" },
-  { src: "ia", id: "royal_wedding", title: "Royal Wedding (สี)", year: "1951", genre: "เพลง/โรแมนติก" },
-  { src: "ia", id: "mclintok_widescreen", title: "McLintock! (สี)", year: "1963", genre: "ตลก/ผจญภัย" },
-  { src: "ia", id: "little_princess", title: "The Little Princess (สี)", year: "1939", genre: "ครอบครัว" },
-  { src: "ia", id: "ScarletStreet", title: "Scarlet Street", year: "1945", genre: "ฟิล์มนัวร์" },
-  { src: "ia", id: "TheStranger_0", title: "The Stranger", year: "1946", genre: "ระทึกขวัญ" },
-  { src: "ia", id: "suddenly", title: "Suddenly", year: "1954", genre: "ระทึกขวัญ" },
-  { src: "ia", id: "his_girl_friday", title: "His Girl Friday", year: "1940", genre: "ตลก" },
-  { src: "ia", id: "my_favorite_brunette", title: "My Favorite Brunette", year: "1947", genre: "ตลก/ลึกลับ" },
-  { src: "ia", id: "AfricaScreams", title: "Africa Screams", year: "1949", genre: "ตลก/ผจญภัย" },
-  { src: "ia", id: "TheFlyingDeuces", title: "The Flying Deuces", year: "1939", genre: "ตลก" },
-  { src: "ia", id: "penny_serenade", title: "Penny Serenade", year: "1941", genre: "โรแมนติก/ดราม่า" },
-  { src: "ia", id: "Cyrano_DeBergerac", title: "Cyrano de Bergerac", year: "1950", genre: "ดราม่า/โรแมนติก" },
-  { src: "ia", id: "secret_weapon", title: "Sherlock Holmes: Secret Weapon", year: "1943", genre: "ลึกลับ/ระทึกขวัญ" },
-  { src: "ia", id: "JungleBook", title: "Jungle Book (สี)", year: "1942", genre: "ผจญภัย" },
-  { src: "ia", id: "mr_robinson_crusoe", title: "Mr. Robinson Crusoe", year: "1932", genre: "ผจญภัย" },
-  { src: "ia", id: "CaptainKidd_", title: "Captain Kidd", year: "1945", genre: "ผจญภัย" },
-  { src: "ia", id: "CarnivalofSouls", title: "Carnival of Souls", year: "1962", genre: "สยองขวัญ" },
-  { src: "ia", id: "house_on_haunted_hill_ipod", title: "House on Haunted Hill", year: "1959", genre: "สยองขวัญ" },
-  { src: "ia", id: "ThePhantomoftheOpera", title: "The Phantom of the Opera", year: "1925", genre: "สยองขวัญ" },
-  { src: "ia", id: "DasKabinettdesDoktorCaligariTheCabinetofDrCaligari", title: "The Cabinet of Dr. Caligari", year: "1919", genre: "สยองขวัญ" },
-  { src: "ia", id: "Inner_Sanctum_movie", title: "Inner Sanctum", year: "1948", genre: "ลึกลับ" },
-  { src: "ia", id: "impact", title: "Impact", year: "1949", genre: "ฟิล์มนัวร์" },
-  { src: "ia", id: "Detour", title: "Detour", year: "1945", genre: "ฟิล์มนัวร์" },
-  { src: "ia", id: "20000LeaguesUndertheSea", title: "20,000 Leagues Under the Sea", year: "1916", genre: "ผจญภัย/ไซไฟ" },
-  { src: "ia", id: "lost_world", title: "The Lost World", year: "1925", genre: "ผจญภัย" },
-  { src: "ia", id: "gullivers_travels1939", title: "Gulliver's Travels", year: "1939", genre: "แอนิเมชัน" },
-  { src: "ia", id: "charlie_chaplin_film_fest", title: "Charlie Chaplin Festival", year: "1938", genre: "ตลก" },
+  { src: "ia", id: "meet_john_doe", poster: "/dnBZbFE2OGlTGNGBVTn6t83tJtd.jpg", title: "Meet John Doe", year: "1941", genre: "ดราม่า" },
+  { src: "ia", id: "royal_wedding", poster: "/5hOyBgsmSApFl10ZfaYxUTQu5Ze.jpg", title: "Royal Wedding (สี)", year: "1951", genre: "เพลง/โรแมนติก" },
+  { src: "ia", id: "mclintok_widescreen", poster: "/gjaAtWJqGomsE5qNQStHcHhSzES.jpg", title: "McLintock! (สี)", year: "1963", genre: "ตลก/ผจญภัย" },
+  { src: "ia", id: "little_princess", poster: "/cnMSURyv7R6gjmUm5SYdTxXLzIO.jpg", title: "The Little Princess (สี)", year: "1939", genre: "ครอบครัว" },
+  { src: "ia", id: "ScarletStreet", poster: "/eGEDor1BWSQGaLtOntPHUSqNzRC.jpg", title: "Scarlet Street", year: "1945", genre: "ฟิล์มนัวร์" },
+  { src: "ia", id: "TheStranger_0", poster: "/bzjoPScBLUWpSu10m3GbSbSwVhS.jpg", title: "The Stranger", year: "1946", genre: "ระทึกขวัญ" },
+  { src: "ia", id: "suddenly", poster: "/v0eQfRMVJtvEkaJjBsSrd6ri1UI.jpg", title: "Suddenly", year: "1954", genre: "ระทึกขวัญ" },
+  { src: "ia", id: "his_girl_friday", poster: "/lu86Y9zTPH3neCiUzLzHCEFHf7f.jpg", title: "His Girl Friday", year: "1940", genre: "ตลก" },
+  { src: "ia", id: "my_favorite_brunette", poster: "/tTI4QFLQirmIw6YLR5kRAKyDKvv.jpg", title: "My Favorite Brunette", year: "1947", genre: "ตลก/ลึกลับ" },
+  { src: "ia", id: "AfricaScreams", poster: "/kwG0Zvu99fFerIJv0qnqHXZ5MWt.jpg", title: "Africa Screams", year: "1949", genre: "ตลก/ผจญภัย" },
+  { src: "ia", id: "TheFlyingDeuces", poster: "/wXXA3s9tzRV7tgiFqhm7Nvu9W8B.jpg", title: "The Flying Deuces", year: "1939", genre: "ตลก" },
+  { src: "ia", id: "penny_serenade", poster: "/7MC1fE5FSEIP9xf0N2VD68zRKv2.jpg", title: "Penny Serenade", year: "1941", genre: "โรแมนติก/ดราม่า" },
+  { src: "ia", id: "Cyrano_DeBergerac", poster: "/l4JFOXslwb90opz8xozfIhPke8z.jpg", title: "Cyrano de Bergerac", year: "1950", genre: "ดราม่า/โรแมนติก" },
+  { src: "ia", id: "secret_weapon", poster: "/50qLIyhdWrDxcZE0bmHhUaxb2FP.jpg", title: "Sherlock Holmes: Secret Weapon", year: "1943", genre: "ลึกลับ/ระทึกขวัญ" },
+  { src: "ia", id: "JungleBook", poster: "/zYkffyYCFO1Li1f20MyaAYUaYC4.jpg", title: "Jungle Book (สี)", year: "1942", genre: "ผจญภัย" },
+  { src: "ia", id: "mr_robinson_crusoe", poster: "/v9o0gtCiEfJaFjzbyDEnusezzES.jpg", title: "Mr. Robinson Crusoe", year: "1932", genre: "ผจญภัย" },
+  { src: "ia", id: "CaptainKidd_", poster: "/o6Ag6fl5wRX1lwVXq5fP6lHYpsN.jpg", title: "Captain Kidd", year: "1945", genre: "ผจญภัย" },
+  { src: "ia", id: "CarnivalofSouls", poster: "/AdbQsFB8pS090l0NO3uBtLZy2zw.jpg", title: "Carnival of Souls", year: "1962", genre: "สยองขวัญ" },
+  { src: "ia", id: "house_on_haunted_hill_ipod", poster: "/g5kdFt3piV3w1pG65W9sSToJ7HB.jpg", title: "House on Haunted Hill", year: "1959", genre: "สยองขวัญ" },
+  { src: "ia", id: "ThePhantomoftheOpera", poster: "/mvaYpAYj957C2tlq3vVJPSzGJXK.jpg", title: "The Phantom of the Opera", year: "1925", genre: "สยองขวัญ" },
+  { src: "ia", id: "DasKabinettdesDoktorCaligariTheCabinetofDrCaligari", poster: "/myK9DeIsXWGKgUTZyGXg2IfFk0W.jpg", title: "The Cabinet of Dr. Caligari", year: "1919", genre: "สยองขวัญ" },
+  { src: "ia", id: "Inner_Sanctum_movie", poster: "/iPIOExn7a2YlyLyC1n48gZUs98R.jpg", title: "Inner Sanctum", year: "1948", genre: "ลึกลับ" },
+  { src: "ia", id: "impact", poster: "/tNF03oWEefF5dImf0uOt1QgYdew.jpg", title: "Impact", year: "1949", genre: "ฟิล์มนัวร์" },
+  { src: "ia", id: "Detour", poster: "/gJb9HRAs1V4bA0VKsWpT6mhv2RT.jpg", title: "Detour", year: "1945", genre: "ฟิล์มนัวร์" },
+  { src: "ia", id: "20000LeaguesUndertheSea", poster: "/edY5eDCC08OUKjS0k7zWUxYM9BB.jpg", title: "20,000 Leagues Under the Sea", year: "1916", genre: "ผจญภัย/ไซไฟ" },
+  { src: "ia", id: "lost_world", poster: "/411VnWtYJdEFKiaGqJOeTmBv8th.jpg", title: "The Lost World", year: "1925", genre: "ผจญภัย" },
+  { src: "ia", id: "gullivers_travels1939", poster: "/fiwAJIAnSqWbU3JphqN8Y80mFM6.jpg", title: "Gulliver's Travels", year: "1939", genre: "แอนิเมชัน" },
+  { src: "ia", id: "charlie_chaplin_film_fest", poster: "/kZqVmoHksjX1FANINggnaoCmwIn.jpg", title: "Charlie Chaplin Festival", year: "1938", genre: "ตลก" },
 ];
 
 function freeThumb(f) {
+  if (f.poster) return TMDB_IMG + f.poster;
   return f.src === "yt"
     ? `https://img.youtube.com/vi/${f.id}/hqdefault.jpg`
     : `https://archive.org/services/img/${f.id}`;
@@ -900,15 +911,15 @@ function freeEmbed(f) {
 function freeCardHTML(f, i) {
   return `
     <div class="free-card" data-fi="${i}">
-      <img class="thumb" src="${freeThumb(f)}" alt="${esc(f.title)}" loading="lazy">
-      <div class="play-ovl"><span>▶</span></div>
+      <div class="poster-wrap">
+        <img class="thumb" src="${freeThumb(f)}" alt="${esc(f.title)}" loading="lazy">
+        <span class="free-badge ovl">ดูฟรี</span>
+        ${f.hd ? '<span class="hd-badge ovl-r">HD</span>' : ""}
+        <div class="play-ovl"><span>▶</span></div>
+      </div>
       <div class="f-info">
         <div class="f-title">${esc(f.title)}</div>
-        <div class="f-meta">
-          <span class="free-badge">ดูฟรีในเว็บ</span>
-          ${f.hd ? '<span class="hd-badge">HD</span>' : ""}
-          <span>${f.year} · ${esc(f.genre)}</span>
-        </div>
+        <div class="f-meta">${f.year} · ${esc(f.genre)}</div>
       </div>
     </div>`;
 }
@@ -1022,7 +1033,7 @@ async function loadMovies() {
         <div class="movie-grid">${items.map(m => movieCardHTML(m, row.type)).join("")}</div>`;
     });
     if (!html) throw new Error("โหลดข้อมูลไม่ได้");
-    html += freeRowHTML();
+    html = freeRowHTML() + html;
     rowsHTML = html;
     movieArea.innerHTML = html;
     attachCardHandlers();
