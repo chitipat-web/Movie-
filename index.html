@@ -361,6 +361,10 @@
     background: #143d26; color: #4ade80;
     padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 700;
   }
+  .hd-badge {
+    background: #1e3a5f; color: #7dd3fc;
+    padding: 2px 7px; border-radius: 4px; font-size: .68rem; font-weight: 800; letter-spacing: .5px;
+  }
   .free-browse-grid {
     display: grid; gap: 14px;
     grid-template-columns: repeat(auto-fill, minmax(clamp(200px, 60vw, 280px), 1fr));
@@ -842,18 +846,44 @@ const ROWS = [
 // หนังเต็มเรื่องถูกลิขสิทธิ์ให้ดูฟรี — เล่นในเว็บได้เลย
 // src: "ia" = Internet Archive (public domain), "yt" = YouTube (ช่องทางการ)
 const FREE_MOVIES = [
+  // แอนิเมชัน HD/4K จาก Blender Foundation (CC-BY, ภาพคมชัด)
+  { src: "yt", id: "aqz-KE-bpKQ", title: "Big Buck Bunny (4K)", year: "2008", genre: "แอนิเมชัน", hd: true },
+  { src: "yt", id: "eRsGyueVLvQ", title: "Sintel", year: "2010", genre: "แอนิเมชัน/แฟนตาซี", hd: true },
+  { src: "yt", id: "R6MlUcmOul8", title: "Tears of Steel", year: "2012", genre: "ไซไฟ", hd: true },
+  { src: "yt", id: "WhWc3b3KhnY", title: "Spring", year: "2019", genre: "แอนิเมชัน", hd: true },
+  { src: "yt", id: "_cMxraX_5RE", title: "Sprite Fright", year: "2021", genre: "แอนิเมชัน/สยองขวัญ", hd: true },
+  { src: "yt", id: "Z4C82eyhwgU", title: "Caminandes: Gran Dillama", year: "2013", genre: "แอนิเมชัน", hd: true },
+  { src: "yt", id: "TLkA0RELQ1g", title: "Elephants Dream", year: "2006", genre: "แอนิเมชัน", hd: true },
+  { src: "ia", id: "Sita_Sings_the_Blues", title: "Sita Sings the Blues", year: "2008", genre: "แอนิเมชัน" },
+  // หนังคลาสสิกดัง (บางเรื่องเป็นสี) — Internet Archive, public domain
+  { src: "ia", id: "meet_john_doe", title: "Meet John Doe", year: "1941", genre: "ดราม่า" },
+  { src: "ia", id: "royal_wedding", title: "Royal Wedding (สี)", year: "1951", genre: "เพลง/โรแมนติก" },
+  { src: "ia", id: "mclintok_widescreen", title: "McLintock! (สี)", year: "1963", genre: "ตลก/ผจญภัย" },
+  { src: "ia", id: "little_princess", title: "The Little Princess (สี)", year: "1939", genre: "ครอบครัว" },
+  { src: "ia", id: "ScarletStreet", title: "Scarlet Street", year: "1945", genre: "ฟิล์มนัวร์" },
+  { src: "ia", id: "TheStranger_0", title: "The Stranger", year: "1946", genre: "ระทึกขวัญ" },
+  { src: "ia", id: "suddenly", title: "Suddenly", year: "1954", genre: "ระทึกขวัญ" },
   { src: "ia", id: "his_girl_friday", title: "His Girl Friday", year: "1940", genre: "ตลก" },
   { src: "ia", id: "my_favorite_brunette", title: "My Favorite Brunette", year: "1947", genre: "ตลก/ลึกลับ" },
-  { src: "ia", id: "suddenly", title: "Suddenly", year: "1954", genre: "ระทึกขวัญ" },
-  { src: "ia", id: "gullivers_travels1939", title: "Gulliver's Travels", year: "1939", genre: "แอนิเมชัน" },
-  { src: "ia", id: "JungleBook", title: "Jungle Book", year: "1942", genre: "ผจญภัย" },
-  { src: "ia", id: "20000LeaguesUndertheSea", title: "20,000 Leagues Under the Sea", year: "1916", genre: "ผจญภัย/ไซไฟ" },
-  { src: "ia", id: "lost_world", title: "The Lost World", year: "1925", genre: "ผจญภัย" },
+  { src: "ia", id: "AfricaScreams", title: "Africa Screams", year: "1949", genre: "ตลก/ผจญภัย" },
+  { src: "ia", id: "TheFlyingDeuces", title: "The Flying Deuces", year: "1939", genre: "ตลก" },
+  { src: "ia", id: "penny_serenade", title: "Penny Serenade", year: "1941", genre: "โรแมนติก/ดราม่า" },
+  { src: "ia", id: "Cyrano_DeBergerac", title: "Cyrano de Bergerac", year: "1950", genre: "ดราม่า/โรแมนติก" },
+  { src: "ia", id: "secret_weapon", title: "Sherlock Holmes: Secret Weapon", year: "1943", genre: "ลึกลับ/ระทึกขวัญ" },
+  { src: "ia", id: "JungleBook", title: "Jungle Book (สี)", year: "1942", genre: "ผจญภัย" },
+  { src: "ia", id: "mr_robinson_crusoe", title: "Mr. Robinson Crusoe", year: "1932", genre: "ผจญภัย" },
+  { src: "ia", id: "CaptainKidd_", title: "Captain Kidd", year: "1945", genre: "ผจญภัย" },
+  { src: "ia", id: "CarnivalofSouls", title: "Carnival of Souls", year: "1962", genre: "สยองขวัญ" },
+  { src: "ia", id: "house_on_haunted_hill_ipod", title: "House on Haunted Hill", year: "1959", genre: "สยองขวัญ" },
   { src: "ia", id: "ThePhantomoftheOpera", title: "The Phantom of the Opera", year: "1925", genre: "สยองขวัญ" },
   { src: "ia", id: "DasKabinettdesDoktorCaligariTheCabinetofDrCaligari", title: "The Cabinet of Dr. Caligari", year: "1919", genre: "สยองขวัญ" },
-  { src: "ia", id: "house_on_haunted_hill_ipod", title: "House on Haunted Hill", year: "1959", genre: "สยองขวัญ" },
+  { src: "ia", id: "Inner_Sanctum_movie", title: "Inner Sanctum", year: "1948", genre: "ลึกลับ" },
+  { src: "ia", id: "impact", title: "Impact", year: "1949", genre: "ฟิล์มนัวร์" },
+  { src: "ia", id: "Detour", title: "Detour", year: "1945", genre: "ฟิล์มนัวร์" },
+  { src: "ia", id: "20000LeaguesUndertheSea", title: "20,000 Leagues Under the Sea", year: "1916", genre: "ผจญภัย/ไซไฟ" },
+  { src: "ia", id: "lost_world", title: "The Lost World", year: "1925", genre: "ผจญภัย" },
+  { src: "ia", id: "gullivers_travels1939", title: "Gulliver's Travels", year: "1939", genre: "แอนิเมชัน" },
   { src: "ia", id: "charlie_chaplin_film_fest", title: "Charlie Chaplin Festival", year: "1938", genre: "ตลก" },
-  { src: "ia", id: "Sita_Sings_the_Blues", title: "Sita Sings the Blues", year: "2008", genre: "แอนิเมชัน" },
 ];
 
 function freeThumb(f) {
@@ -874,7 +904,11 @@ function freeCardHTML(f, i) {
       <div class="play-ovl"><span>▶</span></div>
       <div class="f-info">
         <div class="f-title">${esc(f.title)}</div>
-        <div class="f-meta"><span class="free-badge">ดูฟรีในเว็บ</span><span>${f.year} · ${esc(f.genre)}</span></div>
+        <div class="f-meta">
+          <span class="free-badge">ดูฟรีในเว็บ</span>
+          ${f.hd ? '<span class="hd-badge">HD</span>' : ""}
+          <span>${f.year} · ${esc(f.genre)}</span>
+        </div>
       </div>
     </div>`;
 }
