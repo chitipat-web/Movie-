@@ -538,7 +538,9 @@ const PROVIDER_LINKS = {
   "plex": "https://www.plex.tv/watch-free",
 };
 
-let tmdbKey = localStorage.getItem("moviehub-tmdb-key") || "";
+// TMDB v3 API key สำหรับเว็บนี้ (ใช้ client-side ได้ตามเงื่อนไข personal use ของ TMDB)
+const TMDB_DEFAULT_KEY = "df7ee8dc869322253561a3d9e588113e";
+let tmdbKey = localStorage.getItem("moviehub-tmdb-key") || TMDB_DEFAULT_KEY;
 const movieArea = document.getElementById("movieArea");
 const keyReset = document.getElementById("keyReset");
 const modalBg = document.getElementById("modalBg");
