@@ -305,6 +305,29 @@
   .m-rating { color: #46d369; font-weight: 700; }
   .movie-error { color: var(--text-dim); padding: 20px clamp(20px, 5vw, 56px); }
 
+  /* แถบเลือกหมวดหนัง (genre) */
+  .genre-bar {
+    display: flex; gap: 9px; overflow-x: auto;
+    padding: 2px clamp(20px, 5vw, 56px) 14px;
+    scrollbar-width: none; position: relative; z-index: 4;
+  }
+  .genre-bar::-webkit-scrollbar { display: none; }
+  .genre-chip {
+    flex: 0 0 auto; padding: 7px 17px; border-radius: 999px;
+    background: rgba(30,30,30,.85); color: #dcdcdc; border: 1px solid #333;
+    font-size: .9rem; cursor: pointer; font-family: inherit; white-space: nowrap;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .genre-chip:hover { border-color: #6a6a6a; color: #fff; }
+  .genre-chip.active { background: #fff; color: #000; font-weight: 700; border-color: #fff; }
+  .movie-browse-grid {
+    display: grid; gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(112px, 28vw, 160px), 1fr));
+    padding: 6px clamp(20px, 5vw, 56px) 26px;
+  }
+  .movie-browse-grid .movie-card { width: auto; }
+  .movie-browse-grid .movie-card:hover { transform: scale(1.05); }
+
   /* ===== Sites popup (รวมเว็บทั้งหมด) ===== */
   .sites-modal-bg {
     position: fixed; inset: 0; background: rgba(0,0,0,.78);
@@ -456,6 +479,7 @@
 </nav>
 
 <section class="movies-sec">
+  <div class="genre-bar" id="genreBar"></div>
   <div id="movieArea"></div>
 </section>
 
@@ -820,22 +844,86 @@ async function loadMovies() {
   }
 }
 
+/* ===== แถบเลือกหมวดหนัง (genre) ===== */
+const GENRES = [
+  { id: "trending", label: "🔥 มาแรง" },
+  { id: 28, label: "แอ็คชั่น" },
+  { id: 35, label: "ตลก" },
+  { id: 27, label: "สยองขวัญ" },
+  { id: 10749, label: "โรแมนติก" },
+  { id: 16, label: "แอนิเมชัน" },
+  { id: 878, label: "ไซไฟ" },
+  { id: 53, label: "ระทึกขวัญ" },
+  { id: 18, label: "ดราม่า" },
+  { id: 10751, label: "ครอบครัว" },
+  { id: 14, label: "แฟนตาซี" },
+  { id: 9648, label: "ลึกลับ" },
+];
+const genreBar = document.getElementById("genreBar");
+let currentGenre = "trending";
+
+function renderGenreBar() {
+  genreBar.innerHTML = GENRES.map(g =>
+    `<button class="genre-chip${g.id === currentGenre ? " active" : ""}" data-g="${g.id}">${g.label}</button>`
+  ).join("");
+  genreBar.querySelectorAll(".genre-chip").forEach(chip => {
+    chip.onclick = () => selectGenre(chip.dataset.g);
+  });
+}
+
+function highlightGenre(id) {
+  genreBar.querySelectorAll(".genre-chip").forEach(c =>
+    c.classList.toggle("active", c.dataset.g === String(id)));
+}
+
+function showTrending() {
+  if (rowsHTML) { movieArea.innerHTML = rowsHTML; attachCardHandlers(); }
+}
+
+async function selectGenre(id) {
+  // เคลียร์ช่องค้นหาถ้ามี
+  if (searchEl.value) { searchEl.value = ""; query = ""; clearBtn.style.display = "none"; render(); }
+  currentGenre = id;
+  highlightGenre(id);
+  if (id === "trending") { showTrending(); return; }
+  const label = (GENRES.find(g => String(g.id) === String(id)) || {}).label || "";
+  movieArea.innerHTML = `<div class="movie-error">กำลังโหลดหนัง${label}...</div>`;
+  try {
+    const data = await tmdbFetch("/discover/movie", {
+      with_genres: id, sort_by: "popularity.desc", "vote_count.gte": 80, include_adult: false,
+    });
+    if (currentGenre !== id) return; // ผู้ใช้เปลี่ยนหมวดไปแล้ว
+    const items = (data.results || []).filter(m => m.poster_path).slice(0, 20);
+    items.forEach(m => { itemCache["movie:" + m.id] = m; });
+    movieArea.innerHTML = items.length
+      ? `<div class="row-title">🎬 หนัง${label}</div>
+         <div class="movie-browse-grid">${items.map(m => movieCardHTML(m, "movie")).join("")}</div>`
+      : `<div class="movie-error">ไม่พบหนังในหมวดนี้</div>`;
+    attachCardHandlers();
+  } catch {
+    movieArea.innerHTML = `<div class="movie-error">โหลดหนังไม่สำเร็จ — ลองใหม่อีกครั้ง</div>`;
+  }
+}
+
 /* ค้นหาหนัง/ซีรีส์จาก TMDB ผ่านช่องค้นหาเดียวกัน */
 async function searchTMDB(q) {
   if (!q) {
-    if (rowsHTML) { movieArea.innerHTML = rowsHTML; attachCardHandlers(); }
+    // กลับไปหมวดที่เลือกไว้ก่อนหน้า
+    if (currentGenre === "trending") { highlightGenre("trending"); showTrending(); }
+    else selectGenre(currentGenre);
     return;
   }
+  highlightGenre(null); // ไม่ไฮไลต์หมวดใดขณะค้นหา
   try {
     const data = await tmdbFetch("/search/multi", { query: q });
     if (q !== searchEl.value.trim()) return; // ผลลัพธ์เก่า ข้ามไป
     const items = (data.results || [])
       .filter(x => (x.media_type === "movie" || x.media_type === "tv") && (x.poster_path || x.overview))
-      .slice(0, 12);
+      .slice(0, 18);
     items.forEach(m => { itemCache[m.media_type + ":" + m.id] = m; });
     movieArea.innerHTML = items.length
       ? `<div class="row-title">🔍 หนัง/ซีรีส์ที่ตรงกับ “${esc(q)}”</div>
-         <div class="movie-grid">${items.map(m => movieCardHTML(m, m.media_type)).join("")}</div>`
+         <div class="movie-browse-grid">${items.map(m => movieCardHTML(m, m.media_type)).join("")}</div>`
       : `<div class="movie-error">ไม่พบหนัง/ซีรีส์ชื่อ “${esc(q)}” — ลองสะกดแบบอื่นหรือชื่อภาษาอังกฤษ</div>`;
     attachCardHandlers();
   } catch {}
@@ -986,6 +1074,7 @@ const onScroll = () => headerEl.classList.toggle("solid", window.scrollY > 60);
 window.addEventListener("scroll", onScroll, { passive: true });
 onScroll();
 
+renderGenreBar();
 loadMovies();
 </script>
 </body>
