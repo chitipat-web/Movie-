@@ -336,35 +336,74 @@
 
   /* ===== Modal ===== */
   .modal-bg {
-    position: fixed; inset: 0; background: rgba(0,0,0,.72);
-    backdrop-filter: blur(4px);
-    display: none; align-items: center; justify-content: center;
-    z-index: 100; padding: 20px;
+    position: fixed; inset: 0; background: rgba(0,0,0,.8);
+    backdrop-filter: blur(5px);
+    display: none; align-items: flex-start; justify-content: center;
+    z-index: 100; padding: 24px 16px; overflow-y: auto;
   }
   .modal-bg.open { display: flex; }
   .modal {
-    background: var(--bg-soft); border: 1px solid #39415f;
-    border-radius: var(--radius);
-    max-width: 560px; width: 100%; max-height: 85vh; overflow-y: auto;
-    padding: 26px; position: relative;
+    background: #181818; border: none;
+    border-radius: 10px;
+    max-width: 540px; width: 100%; margin: auto;
+    position: relative; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.7);
+    animation: modalPop .22s ease;
   }
+  @keyframes modalPop { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .modal { animation: none; } }
   .modal .close {
-    position: absolute; top: 12px; right: 14px;
-    background: none; border: none; color: var(--text-dim);
-    font-size: 1.3rem; cursor: pointer;
+    position: absolute; top: 14px; right: 14px; z-index: 3;
+    background: rgba(20,20,20,.75); border: none; color: #fff;
+    width: 38px; height: 38px; border-radius: 50%;
+    font-size: 1.05rem; cursor: pointer; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s;
   }
-  .modal h3 { font-size: 1.25rem; margin-bottom: 4px; padding-right: 32px; }
-  .modal .meta { color: var(--text-dim); font-size: .85rem; margin-bottom: 14px; }
-  .modal .overview { color: var(--text-dim); line-height: 1.75; font-size: .92rem; margin-bottom: 18px; }
-  .watch-title { font-weight: 700; margin-bottom: 10px; font-size: .95rem; }
-  .providers { display: flex; gap: 8px; flex-wrap: wrap; }
+  .modal .close:hover { background: var(--accent); }
+  /* backdrop hero ในโมดัล */
+  .modal-hero {
+    position: relative; aspect-ratio: 16/9; width: 100%;
+    background-size: cover; background-position: center;
+    background-color: #0d0d0d;
+    display: flex; align-items: flex-end;
+  }
+  .modal-hero::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(0deg, #181818 3%, rgba(24,24,24,.35) 45%, rgba(24,24,24,0) 80%);
+  }
+  .modal-hero-title {
+    position: relative; z-index: 2; padding: 20px 22px 14px; width: 100%;
+  }
+  .modal-hero-title h3 {
+    font-size: clamp(1.35rem, 5vw, 1.85rem); font-weight: 800;
+    line-height: 1.1; text-shadow: 0 2px 14px rgba(0,0,0,.7); text-wrap: balance;
+    padding-right: 40px;
+  }
+  .modal-body { padding: 4px 22px 24px; }
+  .modal .meta {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    font-size: .82rem; margin: 12px 0 16px; color: var(--text-dim);
+  }
+  .meta-pill {
+    background: #2a2a2a; padding: 3px 10px; border-radius: 4px;
+    color: #dcdcdc; font-weight: 600;
+  }
+  .meta-pill.score { color: #46d369; }
+  .modal .overview { color: #d2d2d2; line-height: 1.75; font-size: .93rem; margin-bottom: 20px; }
+  .watch-title { font-weight: 700; margin-bottom: 12px; font-size: 1rem; display: flex; align-items: center; gap: 7px; }
+  .providers { display: flex; gap: 9px; flex-wrap: wrap; }
   .provider {
-    display: inline-block; padding: 7px 15px; border-radius: 999px;
-    background: var(--chip); color: var(--text); text-decoration: none;
-    font-size: .85rem; border: 1px solid #39415f;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 16px; border-radius: 6px;
+    background: #fff; color: #111; text-decoration: none;
+    font-size: .88rem; font-weight: 700; border: none;
+    transition: filter .15s, transform .15s;
   }
-  .provider:hover { border-color: var(--accent); }
-  .providers .none { color: var(--text-dim); font-size: .88rem; }
+  .provider:hover { filter: brightness(.85); transform: translateY(-1px); }
+  .provider::after { content: "↗"; font-size: .8em; opacity: .6; }
+  .providers .none { color: var(--text-dim); font-size: .9rem; line-height: 1.7; }
+  .providers .none .provider { margin-left: 6px; }
 
   /* ===== Footer ===== */
   footer {
@@ -816,14 +855,25 @@ async function openItem(type, id) {
   if (!m) return;
   const title = m.title || m.name || "";
   const year = ((m.release_date || m.first_air_date) || "").slice(0, 4);
-  const kind = type === "tv" ? "ซีรีส์" : "หนัง";
+  const kind = type === "tv" ? "ซีรีส์" : "ภาพยนตร์";
+  const art = m.backdrop_path ? TMDB_BACKDROP + m.backdrop_path
+            : m.poster_path ? TMDB_BACKDROP + m.poster_path : "";
   modalBox.innerHTML = `
     <button class="close" aria-label="ปิด">✕</button>
-    <h3>${esc(title)}</h3>
-    <div class="meta">${kind}${year ? " · " + year : ""} · ★ ${(m.vote_average || 0).toFixed(1)}/10 (${m.vote_count || 0} โหวต)</div>
-    <div class="overview">${esc(m.overview) || "ไม่มีเรื่องย่อภาษาไทย"}</div>
-    <div class="watch-title">📺 ดูถูกลิขสิทธิ์ได้ที่</div>
-    <div class="providers" id="provArea">กำลังตรวจสอบ...</div>`;
+    <div class="modal-hero" style="${art ? `background-image:url(${art})` : "background:#222"}">
+      <div class="modal-hero-title"><h3>${esc(title)}</h3></div>
+    </div>
+    <div class="modal-body">
+      <div class="meta">
+        <span class="meta-pill score">★ ${(m.vote_average || 0).toFixed(1)}</span>
+        ${year ? `<span class="meta-pill">${year}</span>` : ""}
+        <span class="meta-pill">${kind}</span>
+        <span>${(m.vote_count || 0).toLocaleString("th-TH")} โหวต</span>
+      </div>
+      <div class="overview">${esc(m.overview) || "ไม่มีเรื่องย่อภาษาไทยสำหรับเรื่องนี้"}</div>
+      <div class="watch-title">📺 ดูถูกลิขสิทธิ์ได้ที่</div>
+      <div class="providers" id="provArea">กำลังตรวจสอบ...</div>
+    </div>`;
   modalBg.classList.add("open");
   modalBox.querySelector(".close").onclick = closeModal;
 
